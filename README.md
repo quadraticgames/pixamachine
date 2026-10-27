@@ -1,6 +1,6 @@
-# ArtPixelfy
+# Pixa Machine
 
-ArtPixelfy is a web application that allows users to upload images and convert them into pixel art. It features an intuitive drag-and-drop interface, adjustable pixel size, and the ability to download the pixelated image.
+Pixa Machine is a web application that allows users to upload images and convert them into pixel art. It features an intuitive drag-and-drop interface, adjustable pixel size, and the ability to download the pixelated image.
 
 ## Features
 
@@ -19,4 +19,4 @@ ArtPixelfy is a web application that allows users to upload images and convert t
 
 ## Live Demo
 
-Check out the live demo at [ArtPixelfy on Netlify](https://artpixelfy.netlify.app).
+Check out the live demo at [Pixa Machine](https://pixamachine-production.up.railway.app).

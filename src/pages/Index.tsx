@@ -4,13 +4,14 @@ import { ImageUploader } from "@/components/ImageUploader";
 import { ComparisonCanvas } from "@/components/ComparisonCanvas";
 import { EditorPanel } from "@/components/EditorPanel";
 import { ExportToolbar } from "@/components/ExportToolbar";
+import { PixaMachineMark } from "@/components/PixaMachineMark";
 import { CLASSIC_PALETTES, type Palette } from "@/lib/palettes";
 import { 
   type PixelEngineOptions, 
   type RenderResult, 
   hexToRgb 
 } from "@/lib/pixelEngine";
-import { Keyboard, Sparkles } from "lucide-react";
+import { Keyboard } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -116,13 +117,11 @@ const Index = () => {
           {/* Header */}
           <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4 sm:pb-5">
             <div className="flex items-center gap-3">
-              <a href="/" className="flex items-center gap-2 group">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-                  <Sparkles className="w-5 h-5 text-white" />
-                </div>
+              <a href="/" className="flex items-center gap-2.5 group">
+                <PixaMachineMark className="w-8 h-8 shrink-0 group-hover:scale-105 transition-transform" />
                 <div>
-                  <h1 className="text-xl sm:text-2xl leading-tight font-bold font-pixel tracking-wide text-white group-hover:text-purple-300 transition-colors">
-                    ArtPixelfy
+                  <h1 className="text-xl sm:text-2xl leading-tight font-bold tracking-tight text-white group-hover:text-purple-300 transition-colors">
+                    Pixa Machine
                   </h1>
                   <p className="text-[11px] leading-tight text-white/50 font-sans">
                     Retro Console & Aesthetic Pixel Art Studio
@@ -179,7 +178,7 @@ const Index = () => {
           {!image ? (
             <div className="py-6">
               <div className="text-center max-w-2xl mx-auto space-y-3 mb-8">
-                <h2 className="text-2xl sm:text-3xl leading-tight font-bold font-pixel tracking-wide text-white">
+                <h2 className="text-2xl sm:text-3xl leading-tight font-bold tracking-tight text-white">
                   Convert Any Photo Into Iconic Retro Pixel Art
                 </h2>
                 <p className="max-w-xl mx-auto text-sm sm:text-base leading-relaxed text-white/60 font-sans">
@@ -233,7 +232,7 @@ const Index = () => {
         {/* Studio Footer */}
         <footer className="mt-12 border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50 font-sans">
           <div className="flex items-center gap-2">
-            <span>ArtPixelfy Studio v2.0</span>
+            <span>Pixa Machine Studio v2.0</span>
             <span>•</span>
             <span>Client-side, privacy-first processing</span>
           </div>

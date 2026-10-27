@@ -164,6 +164,6 @@ const server = createServer(async (req, res) => {
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(
-    `ArtPixelfy listening on :${PORT} — Unsplash key ${UNSPLASH_ACCESS_KEY ? "configured" : "NOT configured"}`
+    `Pixa Machine listening on :${PORT} — Unsplash key ${UNSPLASH_ACCESS_KEY ? "configured" : "NOT configured"}`
   );
 });

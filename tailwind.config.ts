@@ -19,7 +19,10 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				pixel: ['Pixelify Sans', 'system-ui'],
+				// Inter is the app's only family now, including the display headings
+				// and the numeric readouts that previously used a monospace face.
+				sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+				mono: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

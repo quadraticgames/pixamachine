@@ -221,8 +221,8 @@ export const FALLBACK_SAMPLE_IMAGES: SampleImage[] = [
 // ---------------------------------------------------------------------------
 
 const UNSPLASH_RANDOM_PATH = "/api/unsplash/photos/random";
-const SESSION_CACHE_KEY = "artpixelfy:unsplash-samples:v1";
-const UNSPLASH_UTM = "?utm_source=artpixelfy&utm_medium=referral";
+const SESSION_CACHE_KEY = "pixamachine:unsplash-samples:v1";
+const UNSPLASH_UTM = "?utm_source=pixamachine&utm_medium=referral";
 
 export const UNSPLASH_HOME_URL = `https://unsplash.com/${UNSPLASH_UTM}`;
 

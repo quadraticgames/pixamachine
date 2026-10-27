@@ -73,7 +73,7 @@ export function ExportToolbar({
     }
 
     let downloadCanvas: HTMLCanvasElement;
-    let fileName = `artpixelfy-${currentPalette.id}`;
+    let fileName = `pixa-machine-${currentPalette.id}`;
 
     if (scaleFactor === 'screen' || !renderResult) {
       downloadCanvas = processedCanvas;
