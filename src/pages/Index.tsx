@@ -2,8 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { ImageUploader } from "@/components/ImageUploader";
 import { ComparisonCanvas } from "@/components/ComparisonCanvas";
-import { PaletteSelector } from "@/components/PaletteSelector";
-import { EffectsControls } from "@/components/EffectsControls";
+import { EditorPanel } from "@/components/EditorPanel";
 import { ExportToolbar } from "@/components/ExportToolbar";
 import { CLASSIC_PALETTES, type Palette } from "@/lib/palettes";
 import { 
@@ -11,14 +10,7 @@ import {
   type RenderResult, 
   hexToRgb 
 } from "@/lib/pixelEngine";
-import { 
-  Keyboard, 
-  Sparkles, 
-  HelpCircle, 
-  X,
-  Palette as PaletteIcon,
-  Sliders
-} from "lucide-react";
+import { Keyboard, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +18,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const DEFAULT_OPTIONS: PixelEngineOptions = {
   pixelSize: 8,
@@ -120,20 +111,20 @@ const Index = () => {
         <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-pink-600/15 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 py-6 sm:px-6 flex flex-col min-h-screen justify-between">
-        <div className="space-y-6">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 py-6 sm:px-6 sm:py-8 flex flex-col min-h-screen justify-between">
+        <div className="space-y-8">
           {/* Header */}
-          <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4 sm:pb-5">
             <div className="flex items-center gap-3">
               <a href="/" className="flex items-center gap-2 group">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-xl sm:text-2xl font-bold font-pixel tracking-wide text-white group-hover:text-purple-300 transition-colors">
+                  <h1 className="text-xl sm:text-2xl leading-tight font-bold font-pixel tracking-wide text-white group-hover:text-purple-300 transition-colors">
                     ArtPixelfy
                   </h1>
-                  <p className="text-[11px] text-white/50 font-sans -mt-0.5">
+                  <p className="text-[11px] leading-tight text-white/50 font-sans">
                     Retro Console & Aesthetic Pixel Art Studio
                   </p>
                 </div>
@@ -160,12 +151,12 @@ const Index = () => {
                       Keyboard Shortcuts
                     </DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-2.5 text-xs text-white/80 pt-2">
-                    <div className="flex items-center justify-between p-2 rounded bg-white/5">
+                  <div className="space-y-2 text-xs text-white/80 pt-2">
+                    <div className="flex items-center justify-between p-2 rounded-md bg-white/5">
                       <span>Paste image from clipboard</span>
-                      <kbd className="px-2 py-0.5 rounded bg-black border border-white/20 font-mono text-[11px]">Ctrl + V</kbd>
+                      <kbd className="px-2 py-0.5 rounded-md bg-black border border-white/20 font-mono text-[11px]">Ctrl + V</kbd>
                     </div>
-                    <div className="flex items-center justify-between p-2 rounded bg-white/5">
+                    <div className="flex items-center justify-between p-2 rounded-md bg-white/5">
                       <span>Drag split divider</span>
                       <span className="text-white/60">Mouse / Touch</span>
                     </div>
@@ -177,7 +168,7 @@ const Index = () => {
                 href="https://github.com/quadraticgames/pixamachine"
                 target="_blank"
                 rel="noreferrer"
-                className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/70 hover:text-white transition-colors"
+                className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/70 hover:text-white transition-colors"
               >
                 v2.0
               </a>
@@ -186,12 +177,12 @@ const Index = () => {
 
           {/* Main Content Area */}
           {!image ? (
-            <div className="py-8">
-              <div className="text-center max-w-xl mx-auto space-y-2 mb-8">
-                <h2 className="text-2xl sm:text-3xl font-bold font-pixel tracking-wide text-white">
+            <div className="py-6">
+              <div className="text-center max-w-2xl mx-auto space-y-3 mb-8">
+                <h2 className="text-2xl sm:text-3xl leading-tight font-bold font-pixel tracking-wide text-white">
                   Convert Any Photo Into Iconic Retro Pixel Art
                 </h2>
-                <p className="text-xs sm:text-sm text-white/60 font-sans">
+                <p className="max-w-xl mx-auto text-sm sm:text-base leading-relaxed text-white/60 font-sans">
                   Quantize with authentic Game Boy, NES, CGA, PICO-8, and C64 color palettes using ordered Bayer & Floyd-Steinberg dithering algorithms.
                 </p>
               </div>
@@ -200,30 +191,20 @@ const Index = () => {
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Top: Comparison Canvas */}
-              <ComparisonCanvas
-                src={image}
-                engineOptions={engineOptions}
-                onCanvasReady={handleCanvasReady}
-              />
+              {/* Canvas, with every image option in the tabbed rail beside it */}
+              <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_22rem] gap-6 items-start">
+                <ComparisonCanvas
+                  src={image}
+                  engineOptions={engineOptions}
+                  onCanvasReady={handleCanvasReady}
+                />
 
-              {/* Bottom: Tabs for Palettes and Effects */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                {/* Left Column: Color Palette Selector (7 cols on desktop) */}
-                <div className="lg:col-span-7">
-                  <PaletteSelector
-                    selectedPalette={selectedPaletteId}
-                    onSelectPalette={setSelectedPaletteId}
-                  />
-                </div>
-
-                {/* Right Column: Pixel Sizing, Dithering & Tone (5 cols on desktop) */}
-                <div className="lg:col-span-5">
-                  <EffectsControls
-                    options={engineOptions}
-                    onChange={setEngineOptions}
-                  />
-                </div>
+                <EditorPanel
+                  selectedPalette={selectedPaletteId}
+                  onSelectPalette={setSelectedPaletteId}
+                  options={engineOptions}
+                  onChange={setEngineOptions}
+                />
               </div>
 
               {/* Bottom Action / Export Bar */}
@@ -250,7 +231,7 @@ const Index = () => {
         </div>
 
         {/* Studio Footer */}
-        <footer className="pt-8 pb-4 border-t border-white/10 mt-12 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50 font-sans">
+        <footer className="mt-12 border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50 font-sans">
           <div className="flex items-center gap-2">
             <span>ArtPixelfy Studio v2.0</span>
             <span>•</span>

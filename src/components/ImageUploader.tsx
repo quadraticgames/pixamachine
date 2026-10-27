@@ -8,7 +8,7 @@ import {
   fetchUnsplashSamples,
   type SampleImage
 } from "@/lib/samples";
-import { UploadCloud, Image as ImageIcon, Sparkles, Clipboard, ArrowRight } from "lucide-react";
+import { UploadCloud, Sparkles, Clipboard, ArrowRight } from "lucide-react";
 
 interface ImageUploaderProps {
   onUpload: (fileOrUrl: File | string, presetOptions?: { paletteId?: string; pixelSize?: number }) => void;
@@ -63,12 +63,12 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
   });
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
+    <div className="space-y-8 max-w-2xl mx-auto">
       {/* Main Drag & Drop Zone */}
       <div
         {...getRootProps()}
         className={cn(
-          "relative h-[260px] w-full rounded-2xl border-2 border-dashed transition-all duration-300 ease-out cursor-pointer overflow-hidden flex flex-col items-center justify-center p-6 text-center select-none backdrop-blur-md",
+          "relative h-[240px] sm:h-[280px] w-full rounded-2xl border-2 border-dashed transition-all duration-300 ease-out cursor-pointer overflow-hidden flex flex-col items-center justify-center p-6 sm:p-8 text-center select-none backdrop-blur-md",
           isDragging 
             ? "border-purple-400 bg-purple-950/40 scale-[1.01] shadow-[0_0_30px_rgba(168,85,247,0.3)]" 
             : "border-white/20 bg-black/40 hover:border-purple-400/70 hover:bg-black/50 shadow-xl"
@@ -79,13 +79,13 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
         {/* Ambient background glow */}
         <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col items-center space-y-3">
-          <div className="w-16 h-16 rounded-2xl bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-300 shadow-inner group-hover:scale-110 transition-transform">
+        <div className="relative z-10 flex flex-col items-center space-y-4">
+          <div className="w-16 h-16 rounded-xl bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-300 shadow-inner group-hover:scale-110 transition-transform">
             <UploadCloud className="w-8 h-8" />
           </div>
 
-          <div className="space-y-1">
-            <h3 className="text-lg font-bold text-white tracking-wide">
+          <div className="space-y-1.5">
+            <h3 className="text-lg leading-snug font-bold text-white tracking-wide">
               Drop your image here, or <span className="text-purple-400 underline underline-offset-4">browse</span>
             </h3>
             <p className="text-xs text-white/60 font-sans">
@@ -118,11 +118,11 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {samples.map((sample) => (
             <div
               key={sample.id}
-              className="group relative rounded-xl overflow-hidden border border-white/15 bg-black/40 hover:border-purple-400 hover:scale-[1.02] transition-all p-2 flex flex-col space-y-2 backdrop-blur-sm"
+              className="group relative rounded-xl overflow-hidden border border-white/15 bg-black/40 hover:border-purple-400 hover:scale-[1.02] transition-all p-2.5 flex flex-col space-y-2.5 backdrop-blur-sm"
             >
               <button
                 type="button"
@@ -141,7 +141,7 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
                     crossOrigin="anonymous"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-mono bg-black/70 text-white/80">
+                  <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md text-[10px] font-mono bg-black/70 text-white/80">
                     {sample.category}
                   </span>
                 </div>

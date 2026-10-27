@@ -118,7 +118,7 @@ export function ExportToolbar({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-center sm:justify-between gap-3 p-3 bg-black/40 border border-white/15 rounded-xl backdrop-blur-md">
+    <div className="flex flex-wrap items-center justify-center sm:justify-between gap-3 p-4 bg-black/40 border border-white/15 rounded-xl backdrop-blur-md">
       {/* Upload New Button */}
       <Button
         variant="outline"
