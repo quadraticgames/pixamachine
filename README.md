@@ -1,4 +1,4 @@
-# Pixa Machine
+# PixaMachine
 
 A browser-based pixel-art studio. Drop a photo in and it is quantized to an authentic retro
 palette with ordered or error-diffusion dithering, shown side by side against the original,
@@ -117,7 +117,7 @@ src/components/
   EffectsControls.tsx     pixel, tone and overlay controls
   ImageUploader.tsx       drop zone, browse, Unsplash samples
   ExportToolbar.tsx       new image, palette export, copy, download
-  HeaderTooltip.tsx       styled tooltips for the icon header
+  RichTooltip.tsx         styled tooltips, used across the app
 src/lib/
   pixelEngine.ts          dithering, quantization and rendering
   palettes.ts             palette definitions and categories

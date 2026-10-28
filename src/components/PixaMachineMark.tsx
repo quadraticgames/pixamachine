@@ -3,7 +3,7 @@ interface PixaMachineMarkProps {
 }
 
 /**
- * The Pixa Machine mark: the three brand squares from logo.svg, at the same
+ * The PixaMachine mark: the three brand squares from logo.svg, at the same
  * colours and proportions (blue #1236FF, pink #FF12C5, grey #C8C8C8).
  *
  * The supplied logo file draws its wordmark as SVG <text> in the Windows-only

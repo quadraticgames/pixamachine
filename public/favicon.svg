@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="PixaMachine">
+  <!-- The three brand squares from logo.svg, on the app's dark surface so the
+       grey square keeps its contrast in a light browser tab strip. -->
+  <rect width="96" height="96" fill="#0c0d14"/>
+  <rect x="11" y="11" width="32" height="32" fill="#1236FF"/>
+  <rect x="53" y="11" width="32" height="32" fill="#FF12C5"/>
+  <rect x="11" y="53" width="32" height="32" fill="#C8C8C8"/>
+</svg>

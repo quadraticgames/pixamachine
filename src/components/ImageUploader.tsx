@@ -16,20 +16,20 @@ interface ImageUploaderProps {
 
 export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [samples, setSamples] = useState<SampleImage[]>(FALLBACK_SAMPLE_IMAGES);
-  const [isLoadingSamples, setIsLoadingSamples] = useState(true);
+  // Null while the first request is in flight. Starting on the built-in SVG
+  // samples made them flash on every load, since they render instantly and are
+  // replaced a moment later by the photos.
+  const [samples, setSamples] = useState<SampleImage[] | null>(null);
 
   // Every mount draws a new set: a reload, and returning here via New Image,
-  // both go back out to Unsplash. The built-in samples stay on screen until the
-  // photos arrive, and remain if the request fails.
+  // both go back out to Unsplash. The built-in samples are only a fallback for
+  // a failed request, so they never appear on a normal load.
   useEffect(() => {
     let isCancelled = false;
-    setIsLoadingSamples(true);
 
     fetchUnsplashSamples(4).then((fetched) => {
       if (isCancelled) return;
-      if (fetched) setSamples(fetched);
-      setIsLoadingSamples(false);
+      setSamples(fetched ?? FALLBACK_SAMPLE_IMAGES);
     });
 
     return () => {
@@ -37,7 +37,8 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
     };
   }, []);
 
-  const hasUnsplashSamples = samples.some((sample) => sample.attribution);
+  const isLoadingSamples = samples === null;
+  const hasUnsplashSamples = samples?.some((sample) => sample.attribution) ?? false;
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -65,12 +66,12 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
   });
 
   return (
-    <div className="space-y-5 max-w-2xl mx-auto">
+    <div className="space-y-4 max-w-2xl mx-auto">
       {/* Main Drag & Drop Zone */}
       <div
         {...getRootProps()}
         className={cn(
-          "relative h-[200px] sm:h-[230px] w-full rounded-2xl border border-dashed transition-all duration-300 ease-out cursor-pointer overflow-hidden flex flex-col items-center justify-center p-5 sm:p-6 text-center select-none backdrop-blur-md",
+          "relative h-[180px] sm:h-[207px] w-full rounded-2xl border border-dashed transition-all duration-300 ease-out cursor-pointer overflow-hidden flex flex-col items-center justify-center p-4 sm:p-5 text-center select-none backdrop-blur-md",
           isDragging 
             ? "border-purple-400/60 bg-purple-500/[0.08] scale-[1.005] shadow-[0_0_28px_-6px_rgba(168,85,247,0.5)]" 
             : "border-white/10 bg-white/[0.02] hover:border-purple-400/40 hover:bg-white/[0.04] shadow-sm"
@@ -81,16 +82,16 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
         {/* Ambient background glow */}
         <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col items-center space-y-4">
-          <div className="w-16 h-16 rounded-xl bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-300 shadow-inner group-hover:scale-110 transition-transform">
-            <UploadCloud className="w-8 h-8" />
+        <div className="relative z-10 flex flex-col items-center space-y-3.5">
+          <div className="w-14 h-14 rounded-xl bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-300 shadow-inner group-hover:scale-110 transition-transform">
+            <UploadCloud className="w-7 h-7" />
           </div>
 
-          <div className="space-y-1.5">
-            <h3 className="text-lg leading-snug font-bold text-white tracking-wide">
+          <div className="space-y-1">
+            <h3 className="text-[16px] leading-snug font-bold text-white tracking-wide">
               Drop your image here, or <span className="text-purple-400 underline underline-offset-4">browse</span>
             </h3>
-            <p className="text-xs text-white/60 font-sans">
+            <p className="text-[11px] text-white/60 font-sans">
               Supports PNG, JPG, WEBP, and GIF (up to 20MB)
             </p>
           </div>
@@ -106,7 +107,7 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
       </div>
 
       {/* Or Select Sample Presets */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         <div className="flex items-center justify-between px-1">
           <span className="text-xs font-semibold uppercase tracking-wider text-white/80 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
@@ -121,11 +122,26 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          {samples.map((sample) => (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+          {/* Placeholder cards hold the grid's shape while the photos load, so
+              nothing shifts when they arrive */}
+          {isLoadingSamples &&
+            Array.from({ length: 4 }, (_, i) => (
+              <div
+                key={`sample-skeleton-${i}`}
+                aria-hidden="true"
+                className="flex flex-col space-y-2 overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03] p-2"
+              >
+                <div className="h-[86px] w-full animate-pulse rounded-lg border border-white/[0.06] bg-white/[0.05]" />
+                {/* Same height as the photographer credit line it stands in for */}
+                <div className="h-[15px] w-20 animate-pulse rounded-full bg-white/[0.06]" />
+              </div>
+            ))}
+
+          {samples?.map((sample) => (
             <div
               key={sample.id}
-              className="group relative flex flex-col space-y-2.5 overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03] p-2.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06] hover:shadow-lg"
+              className="group relative flex flex-col space-y-2 overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03] p-2 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06] hover:shadow-lg"
             >
               <button
                 type="button"
@@ -135,7 +151,7 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
                 className="flex flex-col space-y-2 text-left"
               >
                 {/* Image preview thumb */}
-                <div className="relative h-24 w-full overflow-hidden rounded-lg border border-white/[0.06] bg-[#0b0c12]">
+                <div className="relative h-[86px] w-full overflow-hidden rounded-lg border border-white/[0.06] bg-[#0b0c12]">
                   <img
                     src={sample.thumbnailUrl ?? sample.imageUrl}
                     alt={sample.name}

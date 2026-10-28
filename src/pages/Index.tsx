@@ -7,7 +7,7 @@ import { ExportToolbar } from "@/components/ExportToolbar";
 import { PixaMachineMark } from "@/components/PixaMachineMark";
 import { CLASSIC_PALETTES, type Palette } from "@/lib/palettes";
 import { Button } from "@/components/ui/button";
-import { HeaderTooltip } from "@/components/HeaderTooltip";
+import { RichTooltip } from "@/components/RichTooltip";
 import { 
   type DitherType,
   type PixelEngineOptions, 
@@ -208,20 +208,23 @@ const Index = () => {
         <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-pink-600/15 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 py-5 sm:px-6 sm:py-6 flex flex-col min-h-screen justify-between">
-        <div className="space-y-5">
+      {/* The landing screen is sized ~10% tighter than the rest of the app so
+          the hero, drop zone, samples and footer all fit a 768px-tall viewport
+          (a full screen 1366x768 laptop) without a vertical scrollbar. */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 py-4 sm:px-6 sm:py-5 flex flex-col min-h-screen justify-between">
+        <div className="space-y-4">
           {/* Header */}
           {/* On phones the actions get their own row under the brand, so the
               icon buttons stay thumb-sized instead of being squeezed */}
-          <header className="flex flex-col gap-3 border-b border-white/10 pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4 sm:pb-5">
+          <header className="flex flex-col gap-3 border-b border-white/10 pb-3.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4 sm:pb-4">
             <div className="flex items-center gap-3">
               <a href="/" className="flex items-center gap-2.5 group">
-                <PixaMachineMark className="w-8 h-8 shrink-0 group-hover:scale-105 transition-transform" />
+                <PixaMachineMark className="w-7 h-7 shrink-0 group-hover:scale-105 transition-transform" />
                 <div>
-                  <h1 className="text-xl sm:text-2xl leading-tight font-bold tracking-tight text-white group-hover:text-purple-300 transition-colors">
-                    Pixa Machine
+                  <h1 className="text-lg sm:text-[22px] leading-tight font-bold tracking-tight text-white group-hover:text-purple-300 transition-colors">
+                    PixaMachine
                   </h1>
-                  <p className="text-[10px] leading-tight text-white/50 font-sans sm:text-[11px]">
+                  <p className="text-[10px] leading-tight text-white/50 font-sans">
                     Retro Console & Aesthetic Pixel Art Studio
                   </p>
                 </div>
@@ -234,7 +237,7 @@ const Index = () => {
                   room they used to take */}
               {image && (
                 <>
-                  <HeaderTooltip
+                  <RichTooltip
                     label="Randomize"
                     hint="Roll a new palette, pixel size, dither, tone and overlays for this image."
                   >
@@ -246,7 +249,7 @@ const Index = () => {
                     >
                       <Shuffle className="h-3.5 w-3.5 text-purple-400" />
                     </Button>
-                  </HeaderTooltip>
+                  </RichTooltip>
 
                   <ExportToolbar
                     processedCanvas={processedCanvas}
@@ -257,7 +260,7 @@ const Index = () => {
               )}
 
               {canGoFullscreen && (
-                <HeaderTooltip
+                <RichTooltip
                   label={isFullscreen ? "Exit full screen" : "Full screen"}
                   hint="Fill the screen with the editor, exactly like pressing F11. Esc brings the browser back."
                 >
@@ -274,12 +277,12 @@ const Index = () => {
                       <Maximize className="h-3.5 w-3.5 text-purple-400" />
                     )}
                   </Button>
-                </HeaderTooltip>
+                </RichTooltip>
               )}
 
-              <HeaderTooltip
+              <RichTooltip
                 label="Source code"
-                hint="Open the Pixa Machine repository on GitHub in a new tab."
+                hint="Open the PixaMachine repository on GitHub in a new tab."
               >
                 <a
                   href="https://github.com/quadraticgames/pixamachine"
@@ -290,18 +293,18 @@ const Index = () => {
                 >
                   <Github className="w-4 h-4" />
                 </a>
-              </HeaderTooltip>
+              </RichTooltip>
             </div>
           </header>
 
           {/* Main Content Area */}
           {!image ? (
             <div className="pb-3">
-              <div className="text-center max-w-2xl mx-auto space-y-2 mb-5">
-                <h2 className="text-2xl sm:text-3xl leading-tight font-bold tracking-tight text-white">
+              <div className="text-center max-w-2xl mx-auto space-y-1.5 mb-4">
+                <h2 className="text-[22px] sm:text-[27px] leading-tight font-bold tracking-tight text-white">
                   Convert Any Photo Into Iconic Retro Pixel Art
                 </h2>
-                <p className="max-w-xl mx-auto text-sm sm:text-base leading-relaxed text-white/60 font-sans">
+                <p className="max-w-xl mx-auto text-[13px] sm:text-[14px] leading-relaxed text-white/60 font-sans">
                   Quantize with authentic Game Boy, NES, CGA, PICO-8, and C64 color palettes using ordered Bayer & Floyd-Steinberg dithering algorithms.
                 </p>
               </div>
@@ -330,9 +333,9 @@ const Index = () => {
         </div>
 
         {/* Studio Footer */}
-        <footer className="mt-12 border-t border-white/10 pt-5 pb-[env(safe-area-inset-bottom)] flex flex-col sm:flex-row items-center justify-between gap-3 text-center text-[11px] text-white/50 font-sans sm:pt-6 sm:text-left sm:text-xs">
+        <footer className="mt-10 border-t border-white/10 pt-4 pb-[env(safe-area-inset-bottom)] flex flex-col sm:flex-row items-center justify-between gap-3 text-center text-[10px] text-white/50 font-sans sm:pt-5 sm:text-left sm:text-[11px]">
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-            <span>Pixa Machine Studio v2.0</span>
+            <span>PixaMachine Studio v2.0</span>
             <span>•</span>
             <span>Client-side, privacy-first processing</span>
           </div>
@@ -347,7 +350,7 @@ const Index = () => {
               <img
                 src="/images/quadratic-logo.png"
                 alt="Quadratic Games Logo"
-                className="h-5 opacity-80 hover:opacity-100 transition-opacity"
+                className="h-[18px] opacity-80 hover:opacity-100 transition-opacity"
               />
             </a>
           </div>

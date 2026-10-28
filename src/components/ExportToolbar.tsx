@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { HeaderTooltip } from "@/components/HeaderTooltip";
+import { RichTooltip } from "@/components/RichTooltip";
 import { toast } from "sonner";
 import { 
   Copy, 
@@ -94,7 +94,7 @@ export function ExportToolbar({
     // icon, so each one carries a tooltip that names and explains it.
     <div className="flex items-center gap-1.5 sm:gap-2">
       {/* Upload New Button */}
-      <HeaderTooltip
+      <RichTooltip
         label="New image"
         hint="Leave this image and go back to the upload screen for a different photo."
       >
@@ -106,11 +106,11 @@ export function ExportToolbar({
         >
           <Upload className="w-3.5 h-3.5" />
         </Button>
-      </HeaderTooltip>
+      </RichTooltip>
 
       {/* Export Palette Button */}
       {currentPalette.colors.length > 0 && (
-        <HeaderTooltip
+        <RichTooltip
           label={`${currentPalette.name} palette`}
           hint={`Download these ${currentPalette.colors.length} colors as a .hex file.`}
         >
@@ -122,11 +122,11 @@ export function ExportToolbar({
           >
             <PaletteIcon className="w-3.5 h-3.5 text-purple-400" />
           </Button>
-        </HeaderTooltip>
+        </RichTooltip>
       )}
 
       {/* Copy to Clipboard */}
-      <HeaderTooltip
+      <RichTooltip
         label={copied ? 'Copied' : 'Copy'}
         hint={copied
           ? 'The pixel art is on your clipboard, ready to paste.'
@@ -144,10 +144,10 @@ export function ExportToolbar({
         >
           {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
         </Button>
-      </HeaderTooltip>
+      </RichTooltip>
 
       {/* Download: one click, exactly what is on screen */}
-      <HeaderTooltip
+      <RichTooltip
         label="Download PNG"
         hint="Save the current view exactly as you see it, overlays included."
       >
@@ -158,7 +158,7 @@ export function ExportToolbar({
         >
           <Download className="w-3.5 h-3.5" />
         </Button>
-      </HeaderTooltip>
+      </RichTooltip>
     </div>
   );
 }
