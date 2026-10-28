@@ -82,9 +82,11 @@ is always handled server-side, so the access key is never part of the client bun
   allows only `/photos/*` so it cannot act as an open proxy, times out after 10s and sends
   `cache-control: no-store`
 
-Each visit searches a single curated theme (`/photos/random?query=…`) picked from a pool of 18
-chosen for what survives quantization — neon city, desert dunes, jellyfish, cinema marquee —
-and gets four different photographs from it. One search per page load rather than one per
+Each visit searches a single curated theme (`/photos/random?query=…`) picked from a pool of 23
+chosen for what survives quantization — wildflower meadow, lotus flower, mountain sunrise,
+neon signs at night — and gets four different photographs from it. The pool leans towards
+flowers, botanicals and landscapes, with a handful of neon, street and portrait themes kept
+for contrast. One search per page load rather than one per
 card: the demo tier allows 50 requests an hour, so four searches per load would spend the
 whole budget in twelve visits. Nothing is cached, so a reload draws a new theme.
 

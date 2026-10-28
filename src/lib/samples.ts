@@ -108,33 +108,46 @@ const SLOT_PIXEL_SIZES = [8, 8, 6, 10];
  *
  * Plain /photos/random happily hands back office plants and backlit laptops,
  * which quantize into mush. These are chosen for what survives a 4-16 colour
- * palette: hard silhouettes, strong light, saturated or neon colour, and
- * recognisable subjects. A theme still returns four different photographs —
- * it narrows the pool, it doesn't repeat one shot.
+ * palette: hard silhouettes, strong light, saturated colour, recognisable
+ * subjects. A theme still returns four different photographs — it narrows the
+ * pool, it doesn't repeat one shot.
+ *
+ * Weighted towards flowers, botanicals and landscapes: soft petals are harder
+ * to quantize than a neon sign, but a flower with a bit of contrast and a
+ * strong colour still reads at 8px, and it is what most people want to feed a
+ * pixel-art tool. The neon, street and portrait themes stay for contrast.
  *
  * One search per visit, not one per card: the demo access tier allows 50
  * requests an hour, so four searches per load would exhaust it in twelve
  * visits. Callers fall back to plain random if a theme ever comes back empty.
  */
 const SAMPLE_THEMES = [
-  "neon signs at night",
-  "cyberpunk city",
-  "tokyo street at night",
+  // Botanical
+  "wildflower meadow",
+  "flower macro",
+  "tropical flowers",
+  "lotus flower",
+  "sunflower field",
+  "lavender field",
+  "cherry blossom",
+  // Landscapes and natural beauty
   "mountain sunrise",
   "desert dunes",
-  "lighthouse in a storm",
   "autumn forest fog",
+  "mushroom macro",
   "jellyfish",
-  "hot air balloon",
+  "coral reef",
+  "lighthouse in a storm",
+  "ski slope",
+  "surfer big wave",
+  // Contrast: hard light and urban colour
+  "neon signs at night",
+  "tokyo street at night",
   "vintage car",
   "cinema marquee",
-  "arcade machines",
   "retro computer",
-  "surfer big wave",
+  "hot air balloon",
   "dramatic portrait lighting",
-  "fireworks",
-  "mushroom macro",
-  "ski slope",
 ];
 
 /** A fresh theme for this visit; the rest of the set follows from it. */
