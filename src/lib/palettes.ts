@@ -44,23 +44,9 @@ export const CLASSIC_PALETTES: Palette[] = [
     categoryLabel: 'Handheld',
     era: '1996',
     colors: [
-      '#1b1b1b', '#5c5c5c', '#a2a2a2', '#f3f3f3'
+      '#000000', '#545454', '#A9A9A9', '#FFFFFF'
     ],
     description: 'The Game Boy Pocket improved on the original DMG by replacing the pea-soup green screen with a crisp, high-contrast monochrome LCD.'
-  },
-  {
-    id: 'gamegear',
-    name: 'Sega Game Gear',
-    category: 'handheld',
-    categoryLabel: 'Handheld',
-    era: '1990',
-    colors: [
-      '#000000', '#0000AA', '#00AA00', '#00AAAA',
-      '#AA0000', '#AA00AA', '#AA5500', '#AAAAAA',
-      '#555555', '#5555FF', '#55FF55', '#55FFFF',
-      '#FF5555', '#FF55FF', '#FFFF55', '#FFFFFF'
-    ],
-    description: "Sega's full-color portable powerhouse featured a backlit 4096-color master palette displaying up to 32 simultaneous vibrant colors."
   },
   {
     id: 'pico8',
@@ -95,7 +81,8 @@ export const CLASSIC_PALETTES: Palette[] = [
       '#B8F818', '#58D854', '#58F898', '#00E8D8',
       '#787878', '#FCFCFC', '#A4E4FC', '#B8B8F8',
       '#D8B8F8', '#F8A4C0', '#F0D0B0', '#FCE0A8',
-      '#F8D878', '#D8F878', '#B8F8B8', '#00FCFC'
+      '#F8D878', '#D8F878', '#B8F8B8', '#B8F8D8',
+      '#00FCFC', '#F8D8F8'
     ],
     description: 'The Nintendo Entertainment System featured a custom Picture Processing Unit capable of 54 colors tailored for 1980s CRT television sets.'
   },
@@ -113,7 +100,15 @@ export const CLASSIC_PALETTES: Palette[] = [
       '#000055', '#550055', '#AA0055', '#FF0055',
       '#005555', '#555555', '#AA5555', '#FF5555',
       '#00AA55', '#55AA55', '#AAAA55', '#FFAA55',
-      '#00FF55', '#55FF55', '#AAFF55', '#FFFF55'
+      '#00FF55', '#55FF55', '#AAFF55', '#FFFF55',
+      '#0000AA', '#5500AA', '#AA00AA', '#FF00AA',
+      '#0055AA', '#5555AA', '#AA55AA', '#FF55AA',
+      '#00AAAA', '#55AAAA', '#AAAAAA', '#FFAAAA',
+      '#00FFAA', '#55FFAA', '#AAFFAA', '#FFFFAA',
+      '#0000FF', '#5500FF', '#AA00FF', '#FF00FF',
+      '#0055FF', '#5555FF', '#AA55FF', '#FF55FF',
+      '#00AAFF', '#55AAFF', '#AAAAFF', '#FFAAFF',
+      '#00FFFF', '#55FFFF', '#AAFFFF', '#FFFFFF'
     ],
     description: "Sega's 8-bit home console sported a rich 64-color master palette with 32 simultaneous on-screen colors, outperforming the NES in raw color saturation."
   },
@@ -148,7 +143,21 @@ export const CLASSIC_PALETTES: Palette[] = [
     colors: [
       '#000000', '#55FFFF', '#FF55FF', '#FFFFFF'
     ],
-    description: "IBM's 1981 Color Graphics Adapter Mode 4 palette became the hallmark of early MS-DOS gaming like Commander Keen, King's Quest, and Rogue."
+    description: "IBM's 1981 Color Graphics Adapter Mode 4 palette, at its high-intensity cyan/magenta setting, gave early MS-DOS games like King's Quest their unmistakable look."
+  },
+  {
+    id: 'ega16',
+    name: 'EGA 16-Color',
+    category: 'pc',
+    categoryLabel: 'PC / Retro',
+    era: '1984',
+    colors: [
+      '#000000', '#0000AA', '#00AA00', '#00AAAA',
+      '#AA0000', '#AA00AA', '#AA5500', '#AAAAAA',
+      '#555555', '#5555FF', '#55FF55', '#55FFFF',
+      '#FF5555', '#FF55FF', '#FFFF55', '#FFFFFF'
+    ],
+    description: "IBM's fixed 16-color text set, built from 00/55/AA/FF channel levels, that EGA and VGA text modes, DOS games and ANSI art all shared."
   },
   {
     id: 'commodore64',
@@ -190,11 +199,11 @@ export const CLASSIC_PALETTES: Palette[] = [
       '#888888', '#999999', '#AAAAAA', '#BBBBBB',
       '#CCCCCC', '#DDDDDD', '#EEEEEE', '#FFFFFF'
     ],
-    description: 'The standard 16-shade monochrome ramp for text-mode displays, phosphor monitors, and classic ASCII/ANSI terminal art.'
+    description: 'A neutral 16-step gray ramp: the tonal range monochrome monitors approximated with ordered dithering, and the backbone of ASCII and ANSI art.'
   },
   {
     id: 'win95',
-    name: 'Windows 95 / Web Safe',
+    name: 'Windows 95',
     category: 'pc',
     categoryLabel: 'Operating System',
     era: '1995',
@@ -202,16 +211,9 @@ export const CLASSIC_PALETTES: Palette[] = [
       '#000000', '#800000', '#008000', '#808000',
       '#000080', '#800080', '#008080', '#C0C0C0',
       '#808080', '#FF0000', '#00FF00', '#FFFF00',
-      '#0000FF', '#FF00FF', '#00FFFF', '#FFFFFF',
-      '#330000', '#333300', '#336600', '#339900', '#33CC00', '#33FF00',
-      '#660000', '#663300', '#666600', '#669900', '#66CC00', '#66FF00',
-      '#990000', '#993300', '#996600', '#999900', '#99CC00', '#99FF00',
-      '#CC0000', '#CC3300', '#CC6600', '#CC9900', '#CCCC00', '#CCFF00',
-      '#FF0000', '#FF3300', '#FF6600', '#FF9900', '#FFCC00', '#FFFF00',
-      '#003366', '#006699', '#0099CC', '#00CCFF', '#3399FF', '#66B2FF',
-      '#330066', '#660099', '#9900CC', '#CC00FF', '#FF3399', '#FF66B2'
+      '#0000FF', '#FF00FF', '#00FFFF', '#FFFFFF'
     ],
-    description: 'The foundational 256-color VGA space that defined Windows 95 multimedia, Netscape Navigator, and early internet aesthetics.'
+    description: 'The 16-color system palette Windows 3.x and 95 were designed around: silver button faces, a navy title bar and eight saturated accents.'
   },
   {
     id: 'endesga32',
