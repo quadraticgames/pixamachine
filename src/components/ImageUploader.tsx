@@ -38,7 +38,10 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
   }, []);
 
   const isLoadingSamples = samples === null;
-  const hasUnsplashSamples = samples?.some((sample) => sample.attribution) ?? false;
+  // Live results come from the API; the bundled ones ship with the app and
+  // only appear when the request failed.
+  const hasLiveSamples = samples?.some((sample) => sample.attribution && !sample.bundled) ?? false;
+  const hasBundledSamples = samples?.some((sample) => sample.bundled) ?? false;
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -115,9 +118,11 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
           <span className="text-[11px] text-white/50">
             {isLoadingSamples
               ? "Loading random photos…"
-              : hasUnsplashSamples
+              : hasLiveSamples
                 ? "Random from Unsplash"
-                : "One-click demo"}
+                : hasBundledSamples
+                  ? "Bundled Unsplash photos"
+                  : "One-click demo"}
           </span>
         </div>
 
@@ -181,7 +186,7 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
           ))}
         </div>
 
-        {hasUnsplashSamples && (
+        {(hasLiveSamples || hasBundledSamples) && (
           <p className="px-1 text-[10px] text-white/35">
             Photos from{" "}
             <a
@@ -191,8 +196,8 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
               className="underline underline-offset-2 hover:text-purple-300 transition-colors"
             >
               Unsplash
-            </a>{" "}
-            — a fresh random set each session.
+            </a>
+            {hasLiveSamples ? " — a new theme each visit." : "."}
           </p>
         )}
       </div>

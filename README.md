@@ -60,8 +60,8 @@ cp .env.example .env.local   # optional: add UNSPLASH_ACCESS_KEY
 npm run dev                  # http://localhost:8080
 ```
 
-Without an Unsplash key the app still works — the landing screen shows its built-in sample
-images instead of live photographs.
+Without an Unsplash key the app still works — the landing screen shows the four photographs
+bundled in `public/samples` instead of live results.
 
 | Script | What it does |
 | --- | --- |
@@ -82,11 +82,25 @@ is always handled server-side, so the access key is never part of the client bun
   allows only `/photos/*` so it cannot act as an open proxy, times out after 10s and sends
   `cache-control: no-store`
 
-Nothing is cached: each landing-screen mount — a browser reload, or returning via **New
-Image** — draws a new random set, so every visit shows different photographs. That means one
-request per page load, against an Unsplash demo tier of 50 requests per hour. The app falls
-back to its built-in samples (with a `Photo by …` credit link on each photograph) when the API
-is unavailable.
+Each visit searches a single curated theme (`/photos/random?query=…`) picked from a pool of 18
+chosen for what survives quantization — neon city, desert dunes, jellyfish, cinema marquee —
+and gets four different photographs from it. One search per page load rather than one per
+card: the demo tier allows 50 requests an hour, so four searches per load would spend the
+whole budget in twelve visits. Nothing is cached, so a reload draws a new theme.
+
+When the key is missing, the request fails, or the hourly budget is spent, the landing screen
+shows the four photographs bundled in `public/samples`. They are real Unsplash photos stored
+locally rather than placeholder art, they cost no requests, and each card keeps its
+`Photo by …` credit link.
+
+| Bundled file | Photographer |
+| --- | --- |
+| `neon-city.jpg` | [Irina Iriser](https://unsplash.com/@iriser) |
+| `mountain-sunset.jpg` | [Vazgen](https://unsplash.com/@koryunhills) |
+| `jellyfish.jpg` | [Sasha • Make Stories Studio](https://unsplash.com/@sanfrancisco) |
+| `portrait-studio.jpg` | [Michael Guertin](https://unsplash.com/@imik) |
+
+Used under the [Unsplash License](https://unsplash.com/license).
 
 Never name the variable `VITE_UNSPLASH_ACCESS_KEY` — the `VITE_` prefix would inline the key
 into the browser bundle.
