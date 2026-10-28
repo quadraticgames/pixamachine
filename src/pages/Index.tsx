@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { ImageUploader } from "@/components/ImageUploader";
 import { ComparisonCanvas } from "@/components/ComparisonCanvas";
@@ -6,19 +6,14 @@ import { EditorPanel } from "@/components/EditorPanel";
 import { ExportToolbar } from "@/components/ExportToolbar";
 import { PixaMachineMark } from "@/components/PixaMachineMark";
 import { CLASSIC_PALETTES, type Palette } from "@/lib/palettes";
+import { Button } from "@/components/ui/button";
+import { HeaderTooltip } from "@/components/HeaderTooltip";
 import { 
+  type DitherType,
   type PixelEngineOptions, 
-  type RenderResult, 
   hexToRgb 
 } from "@/lib/pixelEngine";
-import { Keyboard } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Github, Shuffle } from "lucide-react";
 
 const DEFAULT_OPTIONS: PixelEngineOptions = {
   pixelSize: 8,
@@ -28,9 +23,28 @@ const DEFAULT_OPTIONS: PixelEngineOptions = {
   brightness: 0,
   contrast: 0,
   saturation: 0,
+  hue: 0,
   pixelShape: 'square',
   showScanlines: false,
   showGrid: false,
+};
+
+// Randomize draws from small, deliberately sane sets so every roll produces a
+// usable image rather than an extreme one.
+const RANDOM_PIXEL_SIZES = [4, 6, 8, 10, 12, 16];
+const RANDOM_DITHER_TYPES: DitherType[] = ['none', 'bayer4', 'bayer8', 'floyd', 'atkinson'];
+
+// Only palettes with a fixed colour list: "Original Colors" has none, which
+// would hide the .hex export in the header. Randomize should always land on a
+// palette you can actually export.
+const RANDOM_PALETTES = CLASSIC_PALETTES.filter((palette) => palette.colors.length > 0);
+
+const pick = <T,>(items: readonly T[]): T => items[Math.floor(Math.random() * items.length)];
+
+/** Integer between min and max inclusive, snapped to step. */
+const pickInt = (min: number, max: number, step = 1): number => {
+  const steps = Math.floor((max - min) / step);
+  return min + Math.floor(Math.random() * (steps + 1)) * step;
 };
 
 const Index = () => {
@@ -38,10 +52,7 @@ const Index = () => {
   const [selectedPaletteId, setSelectedPaletteId] = useState<string>('original');
   const [engineOptions, setEngineOptions] = useState<PixelEngineOptions>(DEFAULT_OPTIONS);
   const [processedCanvas, setProcessedCanvas] = useState<HTMLCanvasElement | null>(null);
-  const [renderResult, setRenderResult] = useState<RenderResult | null>(null);
-  const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [samplesRequest, setSamplesRequest] = useState<number>(0);
 
   // Derive palette RGB colors whenever selected palette changes
   useEffect(() => {
@@ -96,11 +107,52 @@ const Index = () => {
     return () => window.removeEventListener("paste", handlePaste);
   }, [handleImageUpload]);
 
+  // Bringing in an image swaps the whole view, so start the editor from the top
+  // rather than inheriting the scroll position of the upload screen.
+  useEffect(() => {
+    if (image) window.scrollTo(0, 0);
+  }, [image]);
+
+  // "New Image" returns to the start screen — the drop zone, the browse button
+  // and the Unsplash samples — while keeping the palette and engine settings
+  // already dialled in for the next image.
+  const handleNewImage = useCallback(() => {
+    setImage(null);
+    setProcessedCanvas(null);
+    // Ask the upload screen for a fresh set of Unsplash photos.
+    setSamplesRequest((count) => count + 1);
+  }, []);
+
+  // Roll a fresh look for the image already loaded: palette, pixel size,
+  // dithering, tone and overlays all change in one go.
+  const handleRandomize = useCallback(() => {
+    const palette = pick(RANDOM_PALETTES);
+
+    setSelectedPaletteId(palette.id);
+    setEngineOptions((prev) => ({
+      ...prev,
+      pixelSize: pick(RANDOM_PIXEL_SIZES),
+      ditherType: pick(RANDOM_DITHER_TYPES),
+      ditherStrength: pickInt(60, 150, 10) / 100,
+      brightness: pickInt(-20, 20, 2),
+      contrast: pickInt(-20, 30, 2),
+      saturation: pickInt(-20, 40, 5),
+      // Half the rolls keep the colors as-is; the rest rotate by a gentle amount.
+      hue: pick([0, 0, pickInt(-60, 60, 15), pickInt(-60, 60, 15)]),
+      pixelShape: pick(['square', 'circle'] as const),
+      showScanlines: Math.random() < 0.35,
+      showGrid: Math.random() < 0.2,
+    }));
+
+    toast.success(`Randomized — ${palette.name}`);
+  }, []);
+
   const currentPalette = CLASSIC_PALETTES.find(p => p.id === selectedPaletteId) || CLASSIC_PALETTES[0];
 
-  const handleCanvasReady = useCallback((canvas: HTMLCanvasElement, result: RenderResult) => {
+  // The export only needs the rendered canvas, which already carries the
+  // overlays — that is the "current view" the download writes out.
+  const handleCanvasReady = useCallback((canvas: HTMLCanvasElement) => {
     setProcessedCanvas(canvas);
-    setRenderResult(result);
   }, []);
 
   return (
@@ -112,8 +164,8 @@ const Index = () => {
         <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-pink-600/15 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 py-6 sm:px-6 sm:py-8 flex flex-col min-h-screen justify-between">
-        <div className="space-y-8">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 py-5 sm:px-6 sm:py-6 flex flex-col min-h-screen justify-between">
+        <div className="space-y-5">
           {/* Header */}
           <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4 sm:pb-5">
             <div className="flex items-center gap-3">
@@ -132,52 +184,53 @@ const Index = () => {
 
             {/* Header Action Items */}
             <div className="flex items-center gap-2">
-              {/* Keyboard Shortcuts Dialog */}
-              <Dialog open={showShortcuts} onOpenChange={setShowShortcuts}>
-                <DialogTrigger asChild>
-                  <button
-                    type="button"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/80 transition-colors"
+              {/* Image actions live up here so the canvas keeps the vertical
+                  room they used to take */}
+              {image && (
+                <>
+                  <HeaderTooltip
+                    label="Randomize"
+                    hint="Roll a new palette, pixel size, dither, tone and overlays for this image."
                   >
-                    <Keyboard className="w-3.5 h-3.5 text-purple-400" />
-                    <span className="hidden sm:inline">Shortcuts</span>
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="bg-neutral-900 border-white/20 text-white font-sans max-w-sm">
-                  <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-base font-bold">
-                      <Keyboard className="w-4 h-4 text-purple-400" />
-                      Keyboard Shortcuts
-                    </DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-2 text-xs text-white/80 pt-2">
-                    <div className="flex items-center justify-between p-2 rounded-md bg-white/5">
-                      <span>Paste image from clipboard</span>
-                      <kbd className="px-2 py-0.5 rounded-md bg-black border border-white/20 font-mono text-[11px]">Ctrl + V</kbd>
-                    </div>
-                    <div className="flex items-center justify-between p-2 rounded-md bg-white/5">
-                      <span>Drag split divider</span>
-                      <span className="text-white/60">Mouse / Touch</span>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+                    <Button
+                      variant="outline"
+                      onClick={handleRandomize}
+                      aria-label="Randomize every setting"
+                      className="flex h-8 w-8 items-center justify-center p-0 text-xs font-medium"
+                    >
+                      <Shuffle className="h-3.5 w-3.5 text-purple-400" />
+                    </Button>
+                  </HeaderTooltip>
 
-              <a
-                href="https://github.com/quadraticgames/pixamachine"
-                target="_blank"
-                rel="noreferrer"
-                className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/70 hover:text-white transition-colors"
+                  <ExportToolbar
+                    processedCanvas={processedCanvas}
+                    currentPalette={currentPalette}
+                    onUploadNew={handleNewImage}
+                  />
+                </>
+              )}
+
+              <HeaderTooltip
+                label="Source code"
+                hint="Open the Pixa Machine repository on GitHub in a new tab."
               >
-                v2.0
-              </a>
+                <a
+                  href="https://github.com/quadraticgames/pixamachine"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Source code on GitHub"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white/60 transition-colors hover:bg-white/[0.08] hover:text-white"
+                >
+                  <Github className="w-4 h-4" />
+                </a>
+              </HeaderTooltip>
             </div>
           </header>
 
           {/* Main Content Area */}
           {!image ? (
-            <div className="py-6">
-              <div className="text-center max-w-2xl mx-auto space-y-3 mb-8">
+            <div className="pb-3">
+              <div className="text-center max-w-2xl mx-auto space-y-2 mb-5">
                 <h2 className="text-2xl sm:text-3xl leading-tight font-bold tracking-tight text-white">
                   Convert Any Photo Into Iconic Retro Pixel Art
                 </h2>
@@ -186,11 +239,14 @@ const Index = () => {
                 </p>
               </div>
 
-              <ImageUploader onUpload={handleImageUpload} />
+              <ImageUploader
+                onUpload={handleImageUpload}
+                refreshSamples={samplesRequest > 0}
+              />
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Canvas, with every image option in the tabbed rail beside it */}
+              {/* Canvas with every image option in the tabbed rail beside it */}
               <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_22rem] gap-6 items-start">
                 <ComparisonCanvas
                   src={image}
@@ -205,26 +261,6 @@ const Index = () => {
                   onChange={setEngineOptions}
                 />
               </div>
-
-              {/* Bottom Action / Export Bar */}
-              <ExportToolbar
-                processedCanvas={processedCanvas}
-                renderResult={renderResult}
-                currentPalette={currentPalette}
-                onUploadNew={() => fileInputRef.current?.click()}
-              />
-
-              {/* Hidden file input for "Upload New Image" */}
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleImageUpload(file);
-                }}
-              />
             </div>
           )}
         </div>

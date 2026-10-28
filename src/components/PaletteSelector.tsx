@@ -49,8 +49,8 @@ export function PaletteSelector({
             onClick={() => setActiveCategory(cat.id)}
             className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
               activeCategory === cat.id
-                ? 'bg-purple-600 text-white shadow-sm'
-                : 'bg-white/5 hover:bg-white/10 text-white/70'
+                ? 'bg-purple-500 text-white shadow-sm'
+                : 'bg-white/[0.04] text-white/60 hover:bg-white/[0.08] hover:text-white/90'
             }`}
           >
             {cat.label}
@@ -69,8 +69,8 @@ export function PaletteSelector({
               onClick={() => onSelectPalette(palette.id)}
               className={`flex flex-col text-left p-2.5 rounded-lg border transition-all text-xs ${
                 isSelected
-                  ? 'bg-purple-950/70 border-purple-400 ring-1 ring-purple-400 shadow-md'
-                  : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                  ? 'border-purple-400/50 bg-purple-500/[0.10] shadow-sm'
+                  : 'border-white/[0.08] bg-white/[0.03] hover:border-white/15 hover:bg-white/[0.06]'
               }`}
             >
               <div className="flex items-center justify-between w-full mb-1.5">
@@ -118,7 +118,7 @@ export function PaletteSelector({
 
       {/* Selected Palette Description Banner */}
       {currentPalette.description && (
-        <div className="flex items-start gap-2 p-2.5 rounded-lg bg-black/60 border border-white/10 text-white/80 text-[11px] leading-relaxed">
+        <div className="flex items-start gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] p-3 text-[11px] leading-relaxed text-white/70">
           <Info className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <div className="font-semibold text-white flex items-center gap-2">

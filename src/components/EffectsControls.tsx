@@ -15,6 +15,7 @@ import {
   Contrast as ContrastIcon,
   Sparkles,
   RotateCcw,
+  RotateCw,
 } from "lucide-react";
 
 interface ControlsProps {
@@ -112,8 +113,8 @@ export function PixelControls({ options, onChange }: ControlsProps) {
               onClick={() => update({ ditherType: m.id })}
               className={`p-2 rounded-lg border text-left transition-all ${
                 options.ditherType === m.id
-                  ? 'bg-purple-950/80 border-purple-400 text-purple-200 ring-1 ring-purple-400'
-                  : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                  ? 'border-purple-400/50 bg-purple-500/[0.10] text-purple-100'
+                  : 'border-white/[0.08] bg-white/[0.03] text-white/65 hover:border-white/15 hover:bg-white/[0.06]'
               }`}
             >
               <div className="font-semibold text-xs">{m.label}</div>
@@ -143,12 +144,15 @@ export function PixelControls({ options, onChange }: ControlsProps) {
   );
 }
 
-/** Tone tab: pre-processing brightness, contrast and saturation. */
+/** Tone tab: pre-processing brightness, contrast, saturation and hue. */
 export function ToneControls({ options, onChange }: ControlsProps) {
   const update = (patch: Partial<PixelEngineOptions>) => onChange({ ...options, ...patch });
 
   const hasAdjustments =
-    options.brightness !== 0 || options.contrast !== 0 || options.saturation !== 0;
+    options.brightness !== 0 ||
+    options.contrast !== 0 ||
+    options.saturation !== 0 ||
+    options.hue !== 0;
 
   const sliders: {
     label: string;
@@ -170,7 +174,7 @@ export function ToneControls({ options, onChange }: ControlsProps) {
         </label>
         <button
           type="button"
-          onClick={() => update({ brightness: 0, contrast: 0, saturation: 0 })}
+          onClick={() => update({ brightness: 0, contrast: 0, saturation: 0, hue: 0 })}
           disabled={!hasAdjustments}
           className="flex items-center gap-1 text-[11px] text-amber-300 hover:text-amber-200 transition-colors disabled:text-white/30 disabled:cursor-not-allowed"
         >
@@ -199,6 +203,28 @@ export function ToneControls({ options, onChange }: ControlsProps) {
           />
         </div>
       ))}
+
+      {/* Hue sits last and wears a rainbow track, so the rotation is legible */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-xs text-white/70">
+          <span className="flex items-center gap-1.5">
+            <RotateCw className="w-3 h-3" /> Hue
+          </span>
+          <span className="font-mono text-[11px] text-white/60">
+            {options.hue > 0 ? `+${options.hue}` : options.hue}°
+          </span>
+        </div>
+        <Slider
+          value={[options.hue]}
+          onValueChange={([val]) => update({ hue: val })}
+          min={-180}
+          max={180}
+          step={1}
+          trackClassName="hue-track h-2.5"
+          rangeClassName="bg-transparent"
+          className="w-full"
+        />
+      </div>
     </div>
   );
 }
@@ -210,7 +236,7 @@ export function OverlayControls({ options, onChange }: ControlsProps) {
   return (
     <div className="grid grid-cols-1 gap-2">
       {/* Pixel Shape Toggle */}
-      <div className="flex items-center justify-between gap-2 p-3 rounded-lg bg-white/5 border border-white/10">
+      <div className="flex items-center justify-between gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] p-3">
         <span className="text-xs text-white/80 flex items-center gap-1.5">
           {options.pixelShape === 'square' ? <Square className="w-3.5 h-3.5" /> : <CircleDot className="w-3.5 h-3.5" />}
           {options.pixelShape === 'square' ? 'Square' : 'Bead / Dot'}
@@ -225,7 +251,7 @@ export function OverlayControls({ options, onChange }: ControlsProps) {
       </div>
 
       {/* Pixel Grid Toggle */}
-      <label className="flex items-center justify-between gap-2 p-3 rounded-lg bg-white/5 border border-white/10 cursor-pointer">
+      <label className="flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] p-3 transition-colors hover:bg-white/[0.05]">
         <span className="text-xs text-white/80 flex items-center gap-1.5">
           <Grid3X3 className="w-3.5 h-3.5" />
           Grid Lines
@@ -237,7 +263,7 @@ export function OverlayControls({ options, onChange }: ControlsProps) {
       </label>
 
       {/* CRT Scanlines Toggle */}
-      <label className="flex items-center justify-between gap-2 p-3 rounded-lg bg-white/5 border border-white/10 cursor-pointer">
+      <label className="flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] p-3 transition-colors hover:bg-white/[0.05]">
         <span className="text-xs text-white/80 flex items-center gap-1.5">
           <Tv className="w-3.5 h-3.5" />
           CRT Scanlines

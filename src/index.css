@@ -164,4 +164,19 @@
   .scrollbar-slim::-webkit-scrollbar-corner {
     background: transparent;
   }
+
+  /* Rainbow track for the hue slider, so the rotation reads at a glance. */
+  .hue-track {
+    background-image: linear-gradient(
+      90deg,
+      #ff3b3b,
+      #ffd23b,
+      #5bff3b,
+      #3bffd2,
+      #3b7bff,
+      #d23bff,
+      #ff3b3b
+    );
+  }
 }
+

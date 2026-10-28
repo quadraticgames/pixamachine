@@ -33,13 +33,13 @@ export function EditorPanel({
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="lg:sticky lg:top-8">
-      <div className="bg-black/40 border border-white/15 rounded-xl backdrop-blur-md overflow-hidden">
-        <TabsList className="w-full h-auto grid grid-cols-4 gap-1 rounded-none border-b border-white/10 bg-transparent p-1">
+      <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0f1017]/90 shadow-xl backdrop-blur-xl">
+        <TabsList className="w-full h-auto grid grid-cols-4 gap-1 rounded-none border-b border-white/[0.07] bg-transparent p-1.5">
           {TABS.map(({ value, label, icon: Icon }) => (
             <TabsTrigger
               key={value}
               value={value}
-              className="flex items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-[11px] font-medium text-white/50 transition-colors hover:text-white/80 data-[state=active]:bg-white/10 data-[state=active]:text-purple-200 data-[state=active]:shadow-none data-[state=active]:ring-1 data-[state=active]:ring-purple-400/40"
+              className="flex items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-[11px] font-medium text-white/45 transition-colors hover:bg-white/[0.04] hover:text-white/80 data-[state=active]:bg-white/[0.09] data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-white/10"
             >
               <Icon className="w-3.5 h-3.5" />
               <span>{label}</span>
@@ -47,7 +47,7 @@ export function EditorPanel({
           ))}
         </TabsList>
 
-        <div className="p-4">
+        <div className="p-4 sm:p-5">
           <TabsContent value="palette" className="mt-0">
             <PaletteSelector
               selectedPalette={selectedPalette}

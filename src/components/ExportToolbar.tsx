@@ -1,40 +1,24 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { HeaderTooltip } from "@/components/HeaderTooltip";
 import { toast } from "sonner";
 import { 
   Copy, 
   Download, 
   Upload, 
   Check, 
-  Palette as PaletteIcon,
-  Sparkles,
-  ArrowDownToLine,
-  FileCode
+  Palette as PaletteIcon
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { 
-  type RenderResult, 
-  generateExportCanvas 
-} from "@/lib/pixelEngine";
 import { type Palette } from "@/lib/palettes";
 
 interface ExportToolbarProps {
   processedCanvas: HTMLCanvasElement | null;
-  renderResult: RenderResult | null;
   currentPalette: Palette;
   onUploadNew: () => void;
 }
 
 export function ExportToolbar({
   processedCanvas,
-  renderResult,
   currentPalette,
   onUploadNew
 }: ExportToolbarProps) {
@@ -65,27 +49,15 @@ export function ExportToolbar({
     }
   };
 
-  // 2. Download at chosen scale factor
-  const handleDownload = (scaleFactor: number | 'screen') => {
+  // 2. Download exactly what is on screen, overlays included
+  const handleDownload = () => {
     if (!processedCanvas) {
       toast.error("No image to download");
       return;
     }
 
-    let downloadCanvas: HTMLCanvasElement;
-    let fileName = `pixa-machine-${currentPalette.id}`;
-
-    if (scaleFactor === 'screen' || !renderResult) {
-      downloadCanvas = processedCanvas;
-      fileName += '-screen.png';
-    } else {
-      downloadCanvas = generateExportCanvas(renderResult, scaleFactor);
-      if (scaleFactor === 1) {
-        fileName += `-${renderResult.gridCols}x${renderResult.gridRows}-1x.png`;
-      } else {
-        fileName += `-${scaleFactor}x.png`;
-      }
-    }
+    const downloadCanvas = processedCanvas;
+    const fileName = `pixa-machine-${currentPalette.id}.png`;
 
     try {
       const dataUrl = downloadCanvas.toDataURL('image/png');
@@ -118,109 +90,75 @@ export function ExportToolbar({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-center sm:justify-between gap-3 p-4 bg-black/40 border border-white/15 rounded-xl backdrop-blur-md">
+    // Compact cluster: these live in the header, where every control is an
+    // icon, so each one carries a tooltip that names and explains it.
+    <div className="flex items-center gap-2">
       {/* Upload New Button */}
-      <Button
-        variant="outline"
-        onClick={onUploadNew}
-        className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border-white/20 text-xs shadow-none active:shadow-none"
+      <HeaderTooltip
+        label="New image"
+        hint="Leave this image and go back to the upload screen for a different photo."
       >
-        <Upload className="w-3.5 h-3.5" />
-        New Image
-      </Button>
+        <Button
+          variant="outline"
+          onClick={onUploadNew}
+          aria-label="New image"
+          className="flex h-8 w-8 items-center justify-center p-0 text-xs font-medium"
+        >
+          <Upload className="w-3.5 h-3.5" />
+        </Button>
+      </HeaderTooltip>
 
-      {/* Action Buttons */}
-      <div className="flex items-center gap-2">
-        {/* Export Palette Button */}
-        {currentPalette.colors.length > 0 && (
+      {/* Export Palette Button */}
+      {currentPalette.colors.length > 0 && (
+        <HeaderTooltip
+          label={`${currentPalette.name} palette`}
+          hint={`Download these ${currentPalette.colors.length} colors as a .hex file.`}
+        >
           <Button
             variant="outline"
             onClick={handleExportPalette}
-            className="flex items-center gap-1.5 bg-white/5 hover:bg-white/15 text-white/80 border-white/15 text-xs shadow-none active:shadow-none"
-            title="Download hex palette file"
+            aria-label="Export palette"
+            className="flex h-8 w-8 items-center justify-center border-transparent bg-transparent p-0 text-xs text-white/70 shadow-none hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
           >
             <PaletteIcon className="w-3.5 h-3.5 text-purple-400" />
-            <span className="hidden sm:inline">Palette</span>
           </Button>
-        )}
+        </HeaderTooltip>
+      )}
 
-        {/* Copy to Clipboard */}
+      {/* Copy to Clipboard */}
+      <HeaderTooltip
+        label={copied ? 'Copied' : 'Copy'}
+        hint={copied
+          ? 'The pixel art is on your clipboard, ready to paste.'
+          : 'Put the current pixel art on your clipboard as a PNG.'}
+      >
         <Button
           variant="outline"
           onClick={handleCopyClipboard}
-          className={`flex items-center gap-1.5 text-xs transition-colors shadow-none active:shadow-none ${
+          aria-label={copied ? 'Copied' : 'Copy pixel art to clipboard'}
+          className={`flex h-8 w-8 items-center justify-center p-0 text-xs transition-colors ${
             copied
-              ? 'bg-emerald-600/30 border-emerald-400 text-emerald-200'
-              : 'bg-white/10 hover:bg-white/20 text-white border-white/20'
+              ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-200 shadow-sm'
+              : ''
           }`}
         >
           {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-          <span>{copied ? 'Copied!' : 'Copy'}</span>
         </Button>
+      </HeaderTooltip>
 
-        {/* Download Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold px-4 shadow-lg border-0"
-            >
-              <Download className="w-3.5 h-3.5" />
-              Download
-              <ArrowDownToLine className="w-3 h-3 opacity-70" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-neutral-900 border-white/20 text-white font-sans text-xs min-w-[210px]">
-            <DropdownMenuLabel className="text-white/60 text-[10px] uppercase font-mono tracking-wider">
-              Download Scale
-            </DropdownMenuLabel>
-            
-            {renderResult && (
-              <>
-                <DropdownMenuItem 
-                  onClick={() => handleDownload(1)}
-                  className="cursor-pointer hover:bg-white/10 flex justify-between"
-                >
-                  <span className="font-semibold text-purple-300">1× Native Pixel Scale</span>
-                  <span className="font-mono text-white/50 text-[10px]">{renderResult.gridCols}×{renderResult.gridRows}</span>
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  onClick={() => handleDownload(2)}
-                  className="cursor-pointer hover:bg-white/10 flex justify-between"
-                >
-                  <span>2× Scaled</span>
-                  <span className="font-mono text-white/50 text-[10px]">{renderResult.gridCols * 2}×{renderResult.gridRows * 2}</span>
-                </DropdownMenuItem>
-
-                <DropdownMenuItem 
-                  onClick={() => handleDownload(4)}
-                  className="cursor-pointer hover:bg-white/10 flex justify-between"
-                >
-                  <span className="font-medium text-amber-200">4× Crisp HD (Recommended)</span>
-                  <span className="font-mono text-white/50 text-[10px]">{renderResult.gridCols * 4}×{renderResult.gridRows * 4}</span>
-                </DropdownMenuItem>
-
-                <DropdownMenuItem 
-                  onClick={() => handleDownload(8)}
-                  className="cursor-pointer hover:bg-white/10 flex justify-between"
-                >
-                  <span>8× Ultra HD</span>
-                  <span className="font-mono text-white/50 text-[10px]">{renderResult.gridCols * 8}×{renderResult.gridRows * 8}</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-white/10" />
-              </>
-            )}
-
-            <DropdownMenuItem 
-              onClick={() => handleDownload('screen')}
-              className="cursor-pointer hover:bg-white/10 flex justify-between"
-            >
-              <span>Current View (with Overlays)</span>
-              <span className="font-mono text-white/50 text-[10px]">PNG</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      {/* Download: one click, exactly what is on screen */}
+      <HeaderTooltip
+        label="Download PNG"
+        hint="Save the current view exactly as you see it, overlays included."
+      >
+        <Button
+          onClick={handleDownload}
+          aria-label="Download the current view as a PNG"
+          className="flex h-8 w-8 items-center justify-center border-white/10 bg-gradient-to-b from-purple-500 to-purple-600 p-0 text-xs font-semibold text-white shadow-[0_4px_14px_-6px_rgba(124,58,237,0.9)] hover:from-purple-400 hover:to-purple-500"
+        >
+          <Download className="w-3.5 h-3.5" />
+        </Button>
+      </HeaderTooltip>
     </div>
   );
 }

@@ -5,25 +5,27 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] transition-all border-2 border-black",
+  // Quiet, app-like controls: hairline borders, translucent fills that lift on
+  // hover, and a subtle press. Nothing here is load-bearing for layout.
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-transparent text-sm font-medium ring-offset-background transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c0d14] active:scale-[0.985] disabled:pointer-events-none disabled:opacity-45 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 border-black",
+        default: "bg-white text-neutral-900 shadow-sm hover:bg-white/90",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 border-black",
+          "bg-red-500 text-white shadow-sm hover:bg-red-500/90",
         outline:
-          "border-2 border-black bg-background hover:bg-accent hover:text-accent-foreground",
+          "border-white/10 bg-white/[0.04] text-white shadow-sm hover:border-white/20 hover:bg-white/[0.08]",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 border-black",
-        ghost: "hover:bg-accent hover:text-accent-foreground border-transparent",
-        link: "text-primary underline-offset-4 hover:underline border-transparent shadow-none active:shadow-none active:translate-x-0 active:translate-y-0",
-        purple: "bg-[#9370DB] hover:bg-[#9370DB]/90 text-white border-transparent",
+          "border-white/10 bg-white/[0.06] text-white hover:bg-white/[0.10]",
+        ghost: "text-white/70 hover:bg-white/[0.06] hover:text-white",
+        link: "text-purple-300 underline-offset-4 hover:text-purple-200 hover:underline",
+        purple: "bg-purple-600 text-white shadow-sm hover:bg-purple-500",
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
+        sm: "h-8 px-3 text-xs",
+        lg: "h-11 px-8",
         icon: "h-10 w-10",
       },
     },

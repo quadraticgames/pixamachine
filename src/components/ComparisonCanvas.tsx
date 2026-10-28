@@ -107,7 +107,7 @@ export function ComparisonCanvas({
       {/* Main Canvas Presentation Viewport */}
       <div 
         ref={containerRef}
-        className="relative w-full rounded-2xl overflow-hidden border border-white/15 bg-neutral-950/80 shadow-2xl backdrop-blur-sm select-none"
+        className="relative w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b0c12]/90 shadow-2xl backdrop-blur-sm select-none"
         style={{
           minHeight: '340px',
           backgroundImage: 'radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px)',
@@ -156,19 +156,19 @@ export function ComparisonCanvas({
               {/* Vertical line with glow */}
               <div className="w-[3px] h-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)] group-hover:bg-purple-300" />
               {/* Circular Grabber */}
-              <div className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-neutral-900 border-2 border-white shadow-xl flex items-center justify-center text-white transition-transform group-hover:scale-110">
+              <div className="absolute top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-[#12131b] text-white shadow-lg transition-transform group-hover:scale-105">
                 <SplitSquareVertical className="w-4 h-4 text-purple-400" />
               </div>
             </div>
 
             {/* Floating Labels */}
             <div className="absolute top-4 left-4 pointer-events-none z-10">
-              <span className="px-2.5 py-1 rounded-md text-[11px] font-mono tracking-wider font-semibold uppercase bg-black/75 border border-white/20 text-white shadow-md">
+              <span className="rounded-md border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-white shadow-sm backdrop-blur-md">
                 Original
               </span>
             </div>
             <div className="absolute top-4 right-4 pointer-events-none z-10">
-              <span className="px-2.5 py-1 rounded-md text-[11px] font-mono tracking-wider font-semibold uppercase bg-purple-900/80 border border-purple-400 text-purple-200 shadow-md">
+              <span className="rounded-md border border-purple-400/40 bg-purple-500/20 px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-purple-200 shadow-sm backdrop-blur-md">
                 Pixel Art
               </span>
             </div>

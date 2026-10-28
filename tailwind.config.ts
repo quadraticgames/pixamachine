@@ -69,10 +69,23 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			// Polished surface radii: 8px on controls, stepping down for small chips.
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
+			},
+			// Soft, layered elevation: low-opacity shadows with real blur, the way
+			// Figma-style dark UIs suggest depth without drawing attention.
+			boxShadow: {
+				sm: '0 1px 2px 0 rgba(0, 0, 0, 0.35)',
+				DEFAULT: '0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 0 rgba(0, 0, 0, 0.35)',
+				md: '0 4px 12px -2px rgba(0, 0, 0, 0.45)',
+				lg: '0 8px 24px -6px rgba(0, 0, 0, 0.5)',
+				xl: '0 12px 32px -8px rgba(0, 0, 0, 0.55)',
+				'2xl': '0 24px 60px -12px rgba(0, 0, 0, 0.6)',
+				inner: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.04)',
+				none: 'none'
 			},
 			keyframes: {
 				'accordion-down': {

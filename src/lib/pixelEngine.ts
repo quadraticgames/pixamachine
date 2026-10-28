@@ -9,6 +9,7 @@ export interface PixelEngineOptions {
   brightness: number; // -100 to 100
   contrast: number; // -100 to 100
   saturation: number; // -100 to 100
+  hue: number; // -180 to 180 degrees
   pixelShape: PixelShape;
   showScanlines: boolean;
   showGrid: boolean;
@@ -85,12 +86,13 @@ function clamp(val: number, min = 0, max = 255): number {
   return Math.min(max, Math.max(min, val));
 }
 
-// Apply pre-processing: brightness, contrast, saturation
+// Apply pre-processing: brightness, contrast, saturation and hue
 export function applyAdjustments(
   r: number, g: number, b: number,
   brightness: number,
   contrast: number,
-  saturation: number
+  saturation: number,
+  hue: number = 0
 ): [number, number, number] {
   // 1. Brightness (-100 to 100)
   if (brightness !== 0) {
@@ -117,6 +119,28 @@ export function applyAdjustments(
     b = clamp(gray + (b - gray) * sFactor);
   }
 
+  // 4. Hue rotation (-180 to 180 degrees), using the same luma-preserving
+  // matrix as CSS hue-rotate() so the shift matches what a filter would do.
+  if (hue !== 0) {
+    const angle = (hue * Math.PI) / 180;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    const nr = (0.213 + cos * 0.787 - sin * 0.213) * r
+      + (0.715 - cos * 0.715 - sin * 0.715) * g
+      + (0.072 - cos * 0.072 + sin * 0.928) * b;
+    const ng = (0.213 - cos * 0.213 + sin * 0.143) * r
+      + (0.715 + cos * 0.285 + sin * 0.140) * g
+      + (0.072 - cos * 0.072 - sin * 0.283) * b;
+    const nb = (0.213 - cos * 0.213 - sin * 0.787) * r
+      + (0.715 - cos * 0.715 + sin * 0.715) * g
+      + (0.072 + cos * 0.928 + sin * 0.072) * b;
+
+    r = clamp(nr);
+    g = clamp(ng);
+    b = clamp(nb);
+  }
+
   return [Math.round(r), Math.round(g), Math.round(b)];
 }
 
@@ -135,7 +159,7 @@ export function processToPixelGrid(
   height: number,
   options: PixelEngineOptions
 ): RenderResult {
-  const { pixelSize, paletteColors, ditherType, ditherStrength, brightness, contrast, saturation } = options;
+  const { pixelSize, paletteColors, ditherType, ditherStrength, brightness, contrast, saturation, hue = 0 } = options;
 
   const cols = Math.max(1, Math.floor(width / pixelSize));
   const rows = Math.max(1, Math.floor(height / pixelSize));
@@ -180,8 +204,8 @@ export function processToPixelGrid(
         let b = bSum / count;
         const a = aSum / count;
 
-        if (brightness !== 0 || contrast !== 0 || saturation !== 0) {
-          const adj = applyAdjustments(r, g, b, brightness, contrast, saturation);
+        if (brightness !== 0 || contrast !== 0 || saturation !== 0 || hue !== 0) {
+          const adj = applyAdjustments(r, g, b, brightness, contrast, saturation, hue);
           r = adj[0];
           g = adj[1];
           b = adj[2];

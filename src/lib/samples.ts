@@ -297,12 +297,21 @@ function writeSessionCache(samples: SampleImage[]): void {
 /**
  * Fetches random photos from Unsplash. Resolves to null when no access key is
  * configured, the request fails, or the payload is not usable, so callers can
- * keep showing the built-in samples. One fetch per browser session: the demo
- * rate limit is 50 requests/hour.
+ * keep showing the built-in samples.
+ *
+ * By default the session cache is reused, so reloading the page doesn't spend
+ * another request against the demo limit of 50/hour. Pass `refresh` to draw a
+ * brand new set (the "New Image" button does), which still refreshes the cache
+ * so a later reload shows the same photos.
  */
-export async function fetchUnsplashSamples(count = 4): Promise<SampleImage[] | null> {
-  const cached = readSessionCache();
-  if (cached && cached.length >= count) return cached.slice(0, count);
+export async function fetchUnsplashSamples(
+  count = 4,
+  options: { refresh?: boolean } = {}
+): Promise<SampleImage[] | null> {
+  if (!options.refresh) {
+    const cached = readSessionCache();
+    if (cached && cached.length >= count) return cached.slice(0, count);
+  }
 
   try {
     const response = await fetch(`${UNSPLASH_RANDOM_PATH}?count=${count}&orientation=landscape`, {
