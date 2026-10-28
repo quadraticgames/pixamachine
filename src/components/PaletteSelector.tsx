@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { CLASSIC_PALETTES, PALETTE_CATEGORIES, type Palette } from "@/lib/palettes";
 import { Badge } from "@/components/ui/badge";
-import { Check, Info, Palette as PaletteIcon, Search } from "lucide-react";
+import { Check, Info, Palette as PaletteIcon } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -18,21 +18,14 @@ export function PaletteSelector({
   onSelectPalette,
 }: PaletteSelectorProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const currentPalette = useMemo(() => {
     return CLASSIC_PALETTES.find(p => p.id === selectedPalette) || CLASSIC_PALETTES[0];
   }, [selectedPalette]);
 
   const filteredPalettes = useMemo(() => {
-    return CLASSIC_PALETTES.filter(p => {
-      const matchesCategory = activeCategory === 'all' || p.category === activeCategory;
-      const matchesSearch = searchQuery === '' || 
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-  }, [activeCategory, searchQuery]);
+    return CLASSIC_PALETTES.filter(p => activeCategory === 'all' || p.category === activeCategory);
+  }, [activeCategory]);
 
   return (
     <div className="space-y-3">
@@ -65,20 +58,8 @@ export function PaletteSelector({
         ))}
       </div>
 
-      {/* Quick Search */}
-      <div className="relative">
-        <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-white/40" />
-        <input
-          type="text"
-          placeholder="Search retro hardware, consoles, or indie palettes..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-white/40 focus:outline-none focus:border-purple-400 font-sans"
-        />
-      </div>
-
       {/* Scrollable Palette Cards Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 max-h-56 overflow-y-auto pr-1 select-none">
+      <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 max-h-56 overflow-y-auto pr-1 select-none scrollbar-slim">
         {filteredPalettes.map((palette) => {
           const isSelected = palette.id === selectedPalette;
           return (
