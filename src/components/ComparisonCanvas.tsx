@@ -41,13 +41,15 @@ export function ComparisonCanvas({
 
     const onMouseMove = (e: MouseEvent) => handleSplitMove(e.clientX);
     const onTouchMove = (e: TouchEvent) => {
+      // Keep the page from scrolling underneath the finger mid-drag
+      if (e.cancelable) e.preventDefault();
       if (e.touches.length > 0) handleSplitMove(e.touches[0].clientX);
     };
     const onMouseUp = () => setIsDraggingSplit(false);
 
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
-    window.addEventListener('touchmove', onTouchMove);
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
     window.addEventListener('touchend', onMouseUp);
 
     return () => {
@@ -107,9 +109,8 @@ export function ComparisonCanvas({
       {/* Main Canvas Presentation Viewport */}
       <div 
         ref={containerRef}
-        className="relative w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b0c12]/90 shadow-2xl backdrop-blur-sm select-none"
+        className="relative w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b0c12]/90 shadow-2xl backdrop-blur-sm select-none min-h-[240px] sm:min-h-[340px]"
         style={{
-          minHeight: '340px',
           backgroundImage: 'radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px)',
           backgroundSize: '16px 16px'
         }}
@@ -128,7 +129,7 @@ export function ComparisonCanvas({
             <img
               src={src}
               alt="Original"
-              className="block max-w-full max-h-[65vh] object-contain rounded-lg"
+              className="block max-w-full max-h-[46vh] object-contain rounded-lg sm:max-h-[65vh]"
               style={{ imageRendering: 'auto' }}
             />
 
@@ -147,28 +148,31 @@ export function ComparisonCanvas({
             </div>
 
             {/* Split Draggable Handle Line */}
+            {/* A 44px-wide hit strip on phones: the visible line stays 3px, but
+                the finger has something to actually grab, and touch-action
+                keeps the drag from scrolling the page */}
             <div 
-              className="absolute top-0 bottom-0 z-20 cursor-ew-resize flex items-center justify-center group"
-              style={{ left: `${splitPos}%`, transform: 'translateX(-50%)' }}
+              className="absolute top-0 bottom-0 z-20 flex w-11 -translate-x-1/2 cursor-ew-resize touch-none items-center justify-center group sm:w-8"
+              style={{ left: `${splitPos}%` }}
               onMouseDown={() => setIsDraggingSplit(true)}
               onTouchStart={() => setIsDraggingSplit(true)}
             >
               {/* Vertical line with glow */}
               <div className="w-[3px] h-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)] group-hover:bg-purple-300" />
               {/* Circular Grabber */}
-              <div className="absolute top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-[#12131b] text-white shadow-lg transition-transform group-hover:scale-105">
+              <div className="absolute top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-[#12131b] text-white shadow-lg transition-transform group-hover:scale-105 sm:h-8 sm:w-8">
                 <SplitSquareVertical className="w-4 h-4 text-purple-400" />
               </div>
             </div>
 
             {/* Floating Labels */}
-            <div className="absolute top-4 left-4 pointer-events-none z-10">
-              <span className="rounded-md border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-white shadow-sm backdrop-blur-md">
+            <div className="absolute top-2 left-2 pointer-events-none z-10 sm:top-4 sm:left-4">
+              <span className="rounded-md border border-white/10 bg-black/60 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-white shadow-sm backdrop-blur-md sm:px-2.5 sm:py-1 sm:text-[11px]">
                 Original
               </span>
             </div>
-            <div className="absolute top-4 right-4 pointer-events-none z-10">
-              <span className="rounded-md border border-purple-400/40 bg-purple-500/20 px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-purple-200 shadow-sm backdrop-blur-md">
+            <div className="absolute top-2 right-2 pointer-events-none z-10 sm:top-4 sm:right-4">
+              <span className="rounded-md border border-purple-400/40 bg-purple-500/20 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-purple-200 shadow-sm backdrop-blur-md sm:px-2.5 sm:py-1 sm:text-[11px]">
                 Pixel Art
               </span>
             </div>
@@ -177,7 +181,7 @@ export function ComparisonCanvas({
 
         {/* Footer info badge in canvas */}
         {imageSize.width > 0 && (
-          <div className="px-4 py-2 border-t border-white/10 bg-black/60 flex items-center justify-between gap-3 text-[11px] text-white/60 font-mono">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5 border-t border-white/10 bg-black/60 px-3 py-2 font-mono text-[10px] text-white/60 sm:px-4 sm:text-[11px]">
             <span>Source: {imageSize.width} × {imageSize.height}px</span>
             <span>
               Grid: {Math.max(1, Math.floor(imageSize.width / engineOptions.pixelSize))} × {Math.max(1, Math.floor(imageSize.height / engineOptions.pixelSize))} blocks

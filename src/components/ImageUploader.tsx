@@ -11,23 +11,22 @@ import {
 import { UploadCloud, Sparkles, Clipboard } from "lucide-react";
 
 interface ImageUploaderProps {
-  onUpload: (fileOrUrl: File | string, presetOptions?: { paletteId?: string; pixelSize?: number }) => void;
-  /** Draw a new random set of Unsplash photos instead of the session's cache. */
-  refreshSamples?: boolean;
+  onUpload: (fileOrUrl: File | string, presetOptions?: { pixelSize?: number }) => void;
 }
 
-export const ImageUploader = ({ onUpload, refreshSamples = false }: ImageUploaderProps) => {
+export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [samples, setSamples] = useState<SampleImage[]>(FALLBACK_SAMPLE_IMAGES);
   const [isLoadingSamples, setIsLoadingSamples] = useState(true);
 
-  // Swap in a random set of Unsplash photos when they arrive; the built-in
-  // samples stay on screen until then, and remain if the request fails.
+  // Every mount draws a new set: a reload, and returning here via New Image,
+  // both go back out to Unsplash. The built-in samples stay on screen until the
+  // photos arrive, and remain if the request fails.
   useEffect(() => {
     let isCancelled = false;
     setIsLoadingSamples(true);
 
-    fetchUnsplashSamples(4, { refresh: refreshSamples }).then((fetched) => {
+    fetchUnsplashSamples(4).then((fetched) => {
       if (isCancelled) return;
       if (fetched) setSamples(fetched);
       setIsLoadingSamples(false);
@@ -36,7 +35,7 @@ export const ImageUploader = ({ onUpload, refreshSamples = false }: ImageUploade
     return () => {
       isCancelled = true;
     };
-  }, [refreshSamples]);
+  }, []);
 
   const hasUnsplashSamples = samples.some((sample) => sample.attribution);
 
@@ -96,7 +95,8 @@ export const ImageUploader = ({ onUpload, refreshSamples = false }: ImageUploade
             </p>
           </div>
 
-          <div className="flex items-center gap-2 pt-2">
+          {/* Keyboard paste tip is desktop-only; phones have no Ctrl key */}
+          <div className="hidden items-center gap-2 pt-2 sm:flex">
             <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono bg-white/10 text-white/80 border border-white/15">
               <Clipboard className="w-3 h-3 text-purple-300" />
               Tip: Press <kbd className="px-1.5 py-0.5 rounded bg-black/50 border border-white/20 text-white font-mono">Ctrl+V</kbd> to paste
@@ -130,7 +130,6 @@ export const ImageUploader = ({ onUpload, refreshSamples = false }: ImageUploade
               <button
                 type="button"
                 onClick={() => onUpload(sample.imageUrl, {
-                  paletteId: sample.recommendedPalette,
                   pixelSize: sample.recommendedPixelSize
                 })}
                 className="flex flex-col space-y-2 text-left"

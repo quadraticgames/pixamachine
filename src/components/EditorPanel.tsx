@@ -39,7 +39,7 @@ export function EditorPanel({
             <TabsTrigger
               key={value}
               value={value}
-              className="flex items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-[11px] font-medium text-white/45 transition-colors hover:bg-white/[0.04] hover:text-white/80 data-[state=active]:bg-white/[0.09] data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-white/10"
+              className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-[11px] font-medium text-white/45 transition-colors hover:bg-white/[0.04] hover:text-white/80 data-[state=active]:bg-white/[0.09] data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-white/10 sm:min-h-0"
             >
               <Icon className="w-3.5 h-3.5" />
               <span>{label}</span>

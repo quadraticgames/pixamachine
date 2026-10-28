@@ -47,7 +47,7 @@ export function PaletteSelector({
             key={cat.id}
             type="button"
             onClick={() => setActiveCategory(cat.id)}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+            className={`px-3 py-2 rounded-lg text-xs font-medium transition-all sm:px-2.5 sm:py-1 ${
               activeCategory === cat.id
                 ? 'bg-purple-500 text-white shadow-sm'
                 : 'bg-white/[0.04] text-white/60 hover:bg-white/[0.08] hover:text-white/90'
@@ -59,7 +59,7 @@ export function PaletteSelector({
       </div>
 
       {/* Scrollable Palette Cards Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 max-h-56 overflow-y-auto pr-1 select-none scrollbar-slim">
+      <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 max-h-[45vh] overflow-y-auto pr-1 select-none scrollbar-slim sm:max-h-56">
         {filteredPalettes.map((palette) => {
           const isSelected = palette.id === selectedPalette;
           return (

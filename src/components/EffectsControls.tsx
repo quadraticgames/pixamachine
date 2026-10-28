@@ -85,7 +85,7 @@ export function PixelControls({ options, onChange }: ControlsProps) {
               key={size}
               type="button"
               onClick={() => update({ pixelSize: size })}
-              className={`px-2 py-0.5 rounded-md text-[11px] font-mono transition-colors ${
+              className={`px-2.5 py-1 rounded-md text-[11px] font-mono transition-colors sm:px-2 sm:py-0.5 ${
                 options.pixelSize === size
                   ? 'bg-purple-600 text-white font-bold'
                   : 'bg-white/5 text-white/70 hover:bg-white/10'

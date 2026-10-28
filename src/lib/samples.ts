@@ -8,7 +8,6 @@ export interface SampleImage {
   id: string;
   name: string;
   category: string;
-  recommendedPalette: string;
   recommendedPixelSize: number;
   imageUrl: string;
   thumbnailUrl?: string;
@@ -22,7 +21,6 @@ export const FALLBACK_SAMPLE_IMAGES: SampleImage[] = [
     id: 'cyberpunk',
     name: 'Cyber City',
     category: 'Sci-Fi',
-    recommendedPalette: 'cyberpunk',
     recommendedPixelSize: 8,
     imageUrl: `data:image/svg+xml;utf8,${encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
@@ -100,7 +98,6 @@ export const FALLBACK_SAMPLE_IMAGES: SampleImage[] = [
     id: 'landscape',
     name: 'Fuji Sunset',
     category: 'Nature',
-    recommendedPalette: 'endesga32',
     recommendedPixelSize: 8,
     imageUrl: `data:image/svg+xml;utf8,${encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
@@ -147,7 +144,6 @@ export const FALLBACK_SAMPLE_IMAGES: SampleImage[] = [
     id: 'gameboy_zelda',
     name: 'Retro Quest',
     category: 'Gaming',
-    recommendedPalette: 'gameboy',
     recommendedPixelSize: 6,
     imageUrl: `data:image/svg+xml;utf8,${encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
@@ -188,7 +184,6 @@ export const FALLBACK_SAMPLE_IMAGES: SampleImage[] = [
     id: 'fruit',
     name: 'Arcade Cherry',
     category: 'Icons',
-    recommendedPalette: 'pico8',
     recommendedPixelSize: 10,
     imageUrl: `data:image/svg+xml;utf8,${encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
@@ -221,19 +216,14 @@ export const FALLBACK_SAMPLE_IMAGES: SampleImage[] = [
 // ---------------------------------------------------------------------------
 
 const UNSPLASH_RANDOM_PATH = "/api/unsplash/photos/random";
-const SESSION_CACHE_KEY = "pixamachine:unsplash-samples:v1";
 const UNSPLASH_UTM = "?utm_source=pixamachine&utm_medium=referral";
 
 export const UNSPLASH_HOME_URL = `https://unsplash.com/${UNSPLASH_UTM}`;
 
-// Each slot keeps a distinct palette and pixel size, so random photos still
-// demonstrate what the different palettes do.
-const SLOT_DEFAULTS = [
-  { recommendedPalette: "cyberpunk", recommendedPixelSize: 8 },
-  { recommendedPalette: "endesga32", recommendedPixelSize: 8 },
-  { recommendedPalette: "gameboy", recommendedPixelSize: 6 },
-  { recommendedPalette: "pico8", recommendedPixelSize: 10 },
-];
+// Each slot opens at a different pixel size, so a fresh set of random photos
+// doesn't all render at the same scale. Palettes are left alone: every image
+// starts on Original Colors.
+const SLOT_PIXEL_SIZES = [8, 8, 6, 10];
 
 interface UnsplashPhoto {
   id: string;
@@ -257,14 +247,14 @@ function isUnsplashPhoto(value: unknown): value is UnsplashPhoto {
 }
 
 function toSampleImage(photo: UnsplashPhoto, index: number): SampleImage {
-  const slot = SLOT_DEFAULTS[index % SLOT_DEFAULTS.length];
+  const pixelSize = SLOT_PIXEL_SIZES[index % SLOT_PIXEL_SIZES.length];
   const label = (photo.alt_description || photo.description || "Random photo").trim();
 
   return {
     id: photo.id,
     name: label.length > 28 ? `${label.slice(0, 27).trimEnd()}…` : label,
     category: "Unsplash",
-    ...slot,
+    recommendedPixelSize: pixelSize,
     imageUrl: photo.urls.regular,
     thumbnailUrl: photo.urls.small,
     attribution: {
@@ -275,44 +265,14 @@ function toSampleImage(photo: UnsplashPhoto, index: number): SampleImage {
   };
 }
 
-function readSessionCache(): SampleImage[] | null {
-  try {
-    const raw = window.sessionStorage.getItem(SESSION_CACHE_KEY);
-    if (!raw) return null;
-    const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? (parsed as SampleImage[]) : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeSessionCache(samples: SampleImage[]): void {
-  try {
-    window.sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(samples));
-  } catch {
-    // Storage can be unavailable or full; caching is only an optimisation.
-  }
-}
-
 /**
- * Fetches random photos from Unsplash. Resolves to null when no access key is
- * configured, the request fails, or the payload is not usable, so callers can
- * keep showing the built-in samples.
+ * Fetches a fresh random set of photos from Unsplash. Resolves to null when no
+ * access key is configured, the request fails, or the payload is not usable, so
+ * callers can keep showing the built-in samples.
  *
- * By default the session cache is reused, so reloading the page doesn't spend
- * another request against the demo limit of 50/hour. Pass `refresh` to draw a
- * brand new set (the "New Image" button does), which still refreshes the cache
- * so a later reload shows the same photos.
+ * Nothing is cached: every call, including a browser reload, draws a new set.
  */
-export async function fetchUnsplashSamples(
-  count = 4,
-  options: { refresh?: boolean } = {}
-): Promise<SampleImage[] | null> {
-  if (!options.refresh) {
-    const cached = readSessionCache();
-    if (cached && cached.length >= count) return cached.slice(0, count);
-  }
-
+export async function fetchUnsplashSamples(count = 4): Promise<SampleImage[] | null> {
   try {
     const response = await fetch(`${UNSPLASH_RANDOM_PATH}?count=${count}&orientation=landscape`, {
       headers: { Accept: "application/json" },
@@ -325,7 +285,6 @@ export async function fetchUnsplashSamples(
     const samples = payload.filter(isUnsplashPhoto).slice(0, count).map(toSampleImage);
     if (samples.length === 0) return null;
 
-    writeSessionCache(samples);
     return samples;
   } catch {
     // No key configured, offline, or a non-JSON response (e.g. the dev

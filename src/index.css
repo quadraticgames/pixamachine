@@ -165,6 +165,18 @@
     background: transparent;
   }
 
+  /* Tap targets respond immediately on touch: no double-tap zoom delay, and
+     text stays legible when a phone is rotated. */
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  button,
+  a,
+  [role="tab"] {
+    touch-action: manipulation;
+  }
+
   /* Rainbow track for the hue slider, so the rotation reads at a glance. */
   .hue-track {
     background-image: linear-gradient(

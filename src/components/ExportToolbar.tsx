@@ -92,7 +92,7 @@ export function ExportToolbar({
   return (
     // Compact cluster: these live in the header, where every control is an
     // icon, so each one carries a tooltip that names and explains it.
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5 sm:gap-2">
       {/* Upload New Button */}
       <HeaderTooltip
         label="New image"
@@ -102,7 +102,7 @@ export function ExportToolbar({
           variant="outline"
           onClick={onUploadNew}
           aria-label="New image"
-          className="flex h-8 w-8 items-center justify-center p-0 text-xs font-medium"
+          className="flex h-10 w-10 items-center justify-center p-0 text-xs font-medium sm:h-8 sm:w-8"
         >
           <Upload className="w-3.5 h-3.5" />
         </Button>
@@ -118,7 +118,7 @@ export function ExportToolbar({
             variant="outline"
             onClick={handleExportPalette}
             aria-label="Export palette"
-            className="flex h-8 w-8 items-center justify-center border-transparent bg-transparent p-0 text-xs text-white/70 shadow-none hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
+            className="flex h-10 w-10 items-center justify-center border-transparent bg-transparent p-0 text-xs text-white/70 shadow-none hover:border-white/10 hover:bg-white/[0.06] hover:text-white sm:h-8 sm:w-8"
           >
             <PaletteIcon className="w-3.5 h-3.5 text-purple-400" />
           </Button>
@@ -136,7 +136,7 @@ export function ExportToolbar({
           variant="outline"
           onClick={handleCopyClipboard}
           aria-label={copied ? 'Copied' : 'Copy pixel art to clipboard'}
-          className={`flex h-8 w-8 items-center justify-center p-0 text-xs transition-colors ${
+          className={`flex h-10 w-10 items-center justify-center p-0 text-xs transition-colors sm:h-8 sm:w-8 ${
             copied
               ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-200 shadow-sm'
               : ''
@@ -154,7 +154,7 @@ export function ExportToolbar({
         <Button
           onClick={handleDownload}
           aria-label="Download the current view as a PNG"
-          className="flex h-8 w-8 items-center justify-center border-white/10 bg-gradient-to-b from-purple-500 to-purple-600 p-0 text-xs font-semibold text-white shadow-[0_4px_14px_-6px_rgba(124,58,237,0.9)] hover:from-purple-400 hover:to-purple-500"
+          className="flex h-10 w-10 items-center justify-center border-white/10 bg-gradient-to-b from-purple-500 to-purple-600 p-0 text-xs font-semibold text-white shadow-[0_4px_14px_-6px_rgba(124,58,237,0.9)] hover:from-purple-400 hover:to-purple-500 sm:h-8 sm:w-8"
         >
           <Download className="w-3.5 h-3.5" />
         </Button>

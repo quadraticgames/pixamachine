@@ -52,7 +52,6 @@ const Index = () => {
   const [selectedPaletteId, setSelectedPaletteId] = useState<string>('original');
   const [engineOptions, setEngineOptions] = useState<PixelEngineOptions>(DEFAULT_OPTIONS);
   const [processedCanvas, setProcessedCanvas] = useState<HTMLCanvasElement | null>(null);
-  const [samplesRequest, setSamplesRequest] = useState<number>(0);
 
   // Derive palette RGB colors whenever selected palette changes
   useEffect(() => {
@@ -65,11 +64,13 @@ const Index = () => {
     }
   }, [selectedPaletteId]);
 
-  // Handle image upload from file or URL
-  const handleImageUpload = useCallback((fileOrUrl: File | string, presetOptions?: { paletteId?: string; pixelSize?: number }) => {
+  // Handle image upload from file or URL. Every new image starts on Original
+  // Colors, so a palette picked for the previous photo never carries over; the
+  // samples only preset a pixel size.
+  const handleImageUpload = useCallback((fileOrUrl: File | string, presetOptions?: { pixelSize?: number }) => {
     if (typeof fileOrUrl === 'string') {
       setImage(fileOrUrl);
-      if (presetOptions?.paletteId) setSelectedPaletteId(presetOptions.paletteId);
+      setSelectedPaletteId('original');
       if (presetOptions?.pixelSize) {
         setEngineOptions(prev => ({ ...prev, pixelSize: presetOptions.pixelSize || 8 }));
       }
@@ -80,6 +81,7 @@ const Index = () => {
     const reader = new FileReader();
     reader.onload = (e) => {
       setImage(e.target?.result as string);
+      setSelectedPaletteId('original');
       toast.success("Image uploaded successfully!");
     };
     reader.readAsDataURL(fileOrUrl);
@@ -114,13 +116,11 @@ const Index = () => {
   }, [image]);
 
   // "New Image" returns to the start screen — the drop zone, the browse button
-  // and the Unsplash samples — while keeping the palette and engine settings
-  // already dialled in for the next image.
+  // and a freshly drawn set of Unsplash samples, since the uploader mounts
+  // again and fetches on mount.
   const handleNewImage = useCallback(() => {
     setImage(null);
     setProcessedCanvas(null);
-    // Ask the upload screen for a fresh set of Unsplash photos.
-    setSamplesRequest((count) => count + 1);
   }, []);
 
   // Roll a fresh look for the image already loaded: palette, pixel size,
@@ -167,7 +167,9 @@ const Index = () => {
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-5 sm:px-6 sm:py-6 flex flex-col min-h-screen justify-between">
         <div className="space-y-5">
           {/* Header */}
-          <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4 sm:pb-5">
+          {/* On phones the actions get their own row under the brand, so the
+              icon buttons stay thumb-sized instead of being squeezed */}
+          <header className="flex flex-col gap-3 border-b border-white/10 pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4 sm:pb-5">
             <div className="flex items-center gap-3">
               <a href="/" className="flex items-center gap-2.5 group">
                 <PixaMachineMark className="w-8 h-8 shrink-0 group-hover:scale-105 transition-transform" />
@@ -175,7 +177,7 @@ const Index = () => {
                   <h1 className="text-xl sm:text-2xl leading-tight font-bold tracking-tight text-white group-hover:text-purple-300 transition-colors">
                     Pixa Machine
                   </h1>
-                  <p className="text-[11px] leading-tight text-white/50 font-sans">
+                  <p className="text-[10px] leading-tight text-white/50 font-sans sm:text-[11px]">
                     Retro Console & Aesthetic Pixel Art Studio
                   </p>
                 </div>
@@ -183,7 +185,7 @@ const Index = () => {
             </div>
 
             {/* Header Action Items */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end gap-1.5 sm:gap-2">
               {/* Image actions live up here so the canvas keeps the vertical
                   room they used to take */}
               {image && (
@@ -196,7 +198,7 @@ const Index = () => {
                       variant="outline"
                       onClick={handleRandomize}
                       aria-label="Randomize every setting"
-                      className="flex h-8 w-8 items-center justify-center p-0 text-xs font-medium"
+                      className="flex h-10 w-10 items-center justify-center p-0 text-xs font-medium sm:h-8 sm:w-8"
                     >
                       <Shuffle className="h-3.5 w-3.5 text-purple-400" />
                     </Button>
@@ -219,7 +221,7 @@ const Index = () => {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="Source code on GitHub"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white/60 transition-colors hover:bg-white/[0.08] hover:text-white"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white/60 transition-colors hover:bg-white/[0.08] hover:text-white sm:h-8 sm:w-8"
                 >
                   <Github className="w-4 h-4" />
                 </a>
@@ -239,10 +241,7 @@ const Index = () => {
                 </p>
               </div>
 
-              <ImageUploader
-                onUpload={handleImageUpload}
-                refreshSamples={samplesRequest > 0}
-              />
+              <ImageUploader onUpload={handleImageUpload} />
             </div>
           ) : (
             <div className="space-y-6">
@@ -266,8 +265,8 @@ const Index = () => {
         </div>
 
         {/* Studio Footer */}
-        <footer className="mt-12 border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50 font-sans">
-          <div className="flex items-center gap-2">
+        <footer className="mt-12 border-t border-white/10 pt-5 pb-[env(safe-area-inset-bottom)] flex flex-col sm:flex-row items-center justify-between gap-3 text-center text-[11px] text-white/50 font-sans sm:pt-6 sm:text-left sm:text-xs">
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
             <span>Pixa Machine Studio v2.0</span>
             <span>•</span>
             <span>Client-side, privacy-first processing</span>

@@ -21,9 +21,9 @@ Unsplash so the API key never reaches the browser.
 
 - Split view with a draggable divider between original and pixel art
 - **16 palettes** — Original Colors (full 24-bit) plus 15 fixed ones: Game Boy DMG, Game Boy
-  Pocket, Sega Game Gear, PICO-8, NES/Famicom, Sega Master System, Atari 2600, CGA Mode 4,
-  Commodore 64, ZX Spectrum, MS-DOS Grayscale 16, Windows 95/Web Safe, EDG 32, Cyberpunk Neon
-  and Vaporwave Sunset — filterable by Handhelds, Classic Consoles, Vintage PC & OS and
+  Pocket, PICO-8, NES/Famicom, Sega Master System, Atari 2600, CGA Mode 4, EGA 16-Color,
+  Commodore 64, ZX Spectrum, MS-DOS Grayscale 16, Windows 95, EDG 32, Cyberpunk Neon and
+  Vaporwave Sunset — filterable by Handhelds, Classic Consoles, Vintage PC & OS and
   Indie & Aesthetic
 - Pixel size from 2–48px, with 4/6/8/12/16/24/32 presets
 - Dithering: none, Bayer 4×4, Bayer 8×8, Floyd–Steinberg, Atkinson, with adjustable strength
@@ -82,10 +82,11 @@ is always handled server-side, so the access key is never part of the client bun
   allows only `/photos/*` so it cannot act as an open proxy, times out after 10s and sends
   `cache-control: no-store`
 
-Results are cached in `sessionStorage` so a page reload does not spend another request; **New
-Image** bypasses the cache for a new set. The Unsplash demo tier allows 50 requests per hour,
-and the app falls back to its built-in samples (with a `Photo by …` credit link on each
-photograph) when the API is unavailable.
+Nothing is cached: each landing-screen mount — a browser reload, or returning via **New
+Image** — draws a new random set, so every visit shows different photographs. That means one
+request per page load, against an Unsplash demo tier of 50 requests per hour. The app falls
+back to its built-in samples (with a `Photo by …` credit link on each photograph) when the API
+is unavailable.
 
 Never name the variable `VITE_UNSPLASH_ACCESS_KEY` — the `VITE_` prefix would inline the key
 into the browser bundle.
