@@ -125,11 +125,13 @@ export function ComparisonCanvas({
         {/* Interactive Split Slider */}
         <div className="relative w-full flex items-center justify-center overflow-auto p-3 sm:p-4">
           <div className="relative max-w-full">
-            {/* Underlying Original Image */}
+            {/* Underlying Original Image. The height cap subtracts the header,
+                gaps, footer and caption (~16rem) rather than a flat 65vh, so
+                the editor fits the viewport instead of growing a scrollbar. */}
             <img
               src={src}
               alt="Original"
-              className="block max-w-full max-h-[46vh] object-contain rounded-lg sm:max-h-[65vh]"
+              className="block max-w-full max-h-[46vh] object-contain rounded-lg sm:max-h-[calc(100vh-16rem)]"
               style={{ imageRendering: 'auto' }}
             />
 

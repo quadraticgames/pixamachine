@@ -8,7 +8,7 @@ import {
   fetchUnsplashSamples,
   type SampleImage
 } from "@/lib/samples";
-import { UploadCloud, Sparkles, Clipboard } from "lucide-react";
+import { UploadCloud, Clipboard } from "lucide-react";
 
 interface ImageUploaderProps {
   onUpload: (fileOrUrl: File | string, presetOptions?: { pixelSize?: number }) => void;
@@ -106,12 +106,11 @@ export const ImageUploader = ({ onUpload }: ImageUploaderProps) => {
         </div>
       </div>
 
-      {/* Or Select Sample Presets */}
+      {/* Or pick a sample image */}
       <div className="space-y-2.5">
         <div className="flex items-center justify-between px-1">
-          <span className="text-xs font-semibold uppercase tracking-wider text-white/80 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            Or try with a sample preset
+          <span className="text-xs font-semibold uppercase tracking-wider text-white/80">
+            Or try with a sample image
           </span>
           <span className="text-[11px] text-white/50">
             {isLoadingSamples

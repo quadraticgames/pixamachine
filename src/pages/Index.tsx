@@ -333,7 +333,7 @@ const Index = () => {
         </div>
 
         {/* Studio Footer */}
-        <footer className="mt-10 border-t border-white/10 pt-4 pb-[env(safe-area-inset-bottom)] flex flex-col sm:flex-row items-center justify-between gap-3 text-center text-[10px] text-white/50 font-sans sm:pt-5 sm:text-left sm:text-[11px]">
+        <footer className="mt-6 border-t border-white/10 pt-3 pb-[env(safe-area-inset-bottom)] flex flex-col sm:flex-row items-center justify-between gap-3 text-center text-[10px] text-white/50 font-sans sm:pt-4 sm:text-left sm:text-[11px]">
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
             <span>PixaMachine Studio v2.0</span>
             <span>•</span>
