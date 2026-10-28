@@ -13,7 +13,7 @@ import {
   type PixelEngineOptions, 
   hexToRgb 
 } from "@/lib/pixelEngine";
-import { Github, Shuffle } from "lucide-react";
+import { Github, Maximize, Minimize, Shuffle } from "lucide-react";
 
 const DEFAULT_OPTIONS: PixelEngineOptions = {
   pixelSize: 8,
@@ -41,6 +41,49 @@ const RANDOM_PALETTES = CLASSIC_PALETTES.filter((palette) => palette.colors.leng
 
 const pick = <T,>(items: readonly T[]): T => items[Math.floor(Math.random() * items.length)];
 
+/**
+ * Page-level full screen, i.e. what pressing F11 does in Chrome: the browser
+ * chrome disappears and the editor fills the display. Esc still exits, so the
+ * toggle only needs to keep its own label in sync.
+ */
+function useFullscreen() {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  // iOS Safari only allows full screen on video elements, so the control is
+  // hidden there rather than shown as a dead button.
+  const isSupported =
+    typeof document !== "undefined" && document.fullscreenEnabled === true;
+
+  useEffect(() => {
+    const sync = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    // Fires when the browser refuses the request (an embedded frame without
+    // allowfullscreen, a policy, or a denied permission).
+    const refuse = () => toast.error("This browser wouldn't switch to full screen.");
+
+    document.addEventListener("fullscreenchange", sync);
+    document.addEventListener("fullscreenerror", refuse);
+    sync();
+
+    return () => {
+      document.removeEventListener("fullscreenchange", sync);
+      document.removeEventListener("fullscreenerror", refuse);
+    };
+  }, []);
+
+  const toggleFullscreen = useCallback(async () => {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await document.documentElement.requestFullscreen();
+      }
+    } catch {
+      toast.error("This browser wouldn't switch to full screen.");
+    }
+  }, []);
+
+  return { isFullscreen, isSupported, toggleFullscreen };
+}
+
 /** Integer between min and max inclusive, snapped to step. */
 const pickInt = (min: number, max: number, step = 1): number => {
   const steps = Math.floor((max - min) / step);
@@ -52,6 +95,7 @@ const Index = () => {
   const [selectedPaletteId, setSelectedPaletteId] = useState<string>('original');
   const [engineOptions, setEngineOptions] = useState<PixelEngineOptions>(DEFAULT_OPTIONS);
   const [processedCanvas, setProcessedCanvas] = useState<HTMLCanvasElement | null>(null);
+  const { isFullscreen, isSupported: canGoFullscreen, toggleFullscreen } = useFullscreen();
 
   // Derive palette RGB colors whenever selected palette changes
   useEffect(() => {
@@ -210,6 +254,27 @@ const Index = () => {
                     onUploadNew={handleNewImage}
                   />
                 </>
+              )}
+
+              {canGoFullscreen && (
+                <HeaderTooltip
+                  label={isFullscreen ? "Exit full screen" : "Full screen"}
+                  hint="Fill the screen with the editor, exactly like pressing F11. Esc brings the browser back."
+                >
+                  <Button
+                    variant="outline"
+                    onClick={toggleFullscreen}
+                    aria-label={isFullscreen ? "Exit full screen" : "Enter full screen"}
+                    aria-pressed={isFullscreen}
+                    className="flex h-10 w-10 items-center justify-center p-0 text-xs font-medium sm:h-8 sm:w-8"
+                  >
+                    {isFullscreen ? (
+                      <Minimize className="h-3.5 w-3.5 text-purple-400" />
+                    ) : (
+                      <Maximize className="h-3.5 w-3.5 text-purple-400" />
+                    )}
+                  </Button>
+                </HeaderTooltip>
               )}
 
               <HeaderTooltip
