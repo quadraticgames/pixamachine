@@ -105,14 +105,25 @@ async function isFile(filePath) {
   }
 }
 
-function streamFile(req, res, filePath, pathname) {
-  res.writeHead(200, {
+async function streamFile(req, res, filePath, pathname) {
+  const info = await stat(filePath).catch(() => null);
+
+  const headers = {
     "content-type": MIME_TYPES[extname(filePath).toLowerCase()] ?? "application/octet-stream",
     // Vite fingerprints filenames in /assets, so they are safe to cache forever.
     "cache-control": pathname.startsWith("/assets/")
       ? "public, max-age=31536000, immutable"
       : "no-cache",
-  });
+  };
+
+  // Link unfurlers (Slack, iMessage, Discord) fetch the preview image and are
+  // happier with a declared length than a chunked body; HEAD also gets one.
+  if (info) {
+    headers["content-length"] = String(info.size);
+    headers["last-modified"] = info.mtime.toUTCString();
+  }
+
+  res.writeHead(200, headers);
 
   if (req.method === "HEAD") {
     res.end();
@@ -140,7 +151,7 @@ const server = createServer(async (req, res) => {
 
   const requested = resolveWithinDist(url.pathname);
   if (requested && (await isFile(requested)) && !requested.endsWith(sep)) {
-    streamFile(req, res, requested, url.pathname);
+    await streamFile(req, res, requested, url.pathname);
     return;
   }
 
@@ -154,7 +165,7 @@ const server = createServer(async (req, res) => {
 
   const indexHtml = join(DIST_DIR, "index.html");
   if (await isFile(indexHtml)) {
-    streamFile(req, res, indexHtml, "/");
+    await streamFile(req, res, indexHtml, url.pathname);
     return;
   }
 
